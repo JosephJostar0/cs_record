@@ -26,7 +26,7 @@ void dfs(int step) {
 }
 
 int main() {
-	cout << "璇疯緭鍏ユ湰娆℃帓鍒楃殑鏈�澶ф暟:";
+	cout << "请输入本次排列的最大数:";
 	cin >> N;
 	dfs(0);
 	return 0;
