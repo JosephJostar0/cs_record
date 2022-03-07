@@ -22,8 +22,6 @@ int main() {
         for (j = 1; j <= m; j++)
             if (book[j] == 0 && distance[j] < min)
                 min = distance[j], k = j;
-        if (k == 0)
-            break;
         book[k] = 1;
         for (t = 1; t <= m; t++)
             if (e[k][t] < 0x3f3f3f)
