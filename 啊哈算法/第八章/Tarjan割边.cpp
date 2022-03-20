@@ -1,22 +1,19 @@
 #include <iostream>
-int first[10], next[20];
 int startPoint[20], endPoint[20];
-int mark[10], back[10], cutPoint[10], id = 0;
-int m, n, root;
+int first[10], next[20];
+int mark[10], back[10];
+int m, n, root, id = 0, sum = 0;
 void dfs(int current, int father) {
     int i, son = 0;
-    id++;
-    mark[current] = id;
+    mark[current] = ++id;
     back[current] = id;
-    for (i = first[current]; i > 0; i = next[i]) {
+    for (i = first[current]; i != 0; i = next[i]) {
         if (mark[endPoint[i]] == 0) {
             son++;
-            dfs(i, current);
+            dfs(endPoint[i], current);
             back[current] = std::min(back[current], back[endPoint[i]]);
-            if (current != root && back[endPoint[i]] >= back[current])
-                cutPoint[current] = 1;
-            else if (current == root && son >= 2)
-                cutPoint[current] = 1;
+            if (back[endPoint[i]] > mark[current])
+                printf("%d-%d\n", current, endPoint[i]);
         } else if (endPoint[i] != father)
             back[current] = std::min(back[current], back[endPoint[i]]);
     }
@@ -37,8 +34,5 @@ int main() {
     }
     root = 1;
     dfs(1, root);
-    for (i = 1; i <= m; i++)
-        if (cutPoint[i] == 1)
-            std::cout << i << ' ';
     return 0;
 }
