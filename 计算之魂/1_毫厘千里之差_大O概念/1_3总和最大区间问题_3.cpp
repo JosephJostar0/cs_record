@@ -45,5 +45,6 @@ int main() {
         scanf("%lf", &nums[i]);
     MaxSum ms = findMax(nums, 0, N - 1);
     printf("sum:%.2f left:%d right:%d", ms.sum, ms.left, ms.right);
+    free(nums);
     return 0;
 }
