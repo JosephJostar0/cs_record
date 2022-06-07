@@ -1,3 +1,4 @@
+//这是个错误示范。。。。
 #include <iostream>
 class SumMax {
 public:
@@ -32,11 +33,11 @@ SumMax findSum(int Lmargin, int Rmargin) {
             break;
         }
     }
-    for (i = sm.right, sum = 0; i >= Lmargin; i--) {
-        sum += nums[i];
-        if (sum > sm.sum)
-            sm.setAll(i, sm.right, sum);
-    }
+    // for (i = sm.right, sum = 0; i >= Lmargin; i--) {
+    //     sum += nums[i];
+    //     if (sum > sm.sum)
+    //         sm.setAll(i, sm.right, sum);
+    // }
     if (cut >= 0) {
         SumMax sm2 = findSum(cut, Rmargin);
         if (sm.sum < sm2.sum)
@@ -53,5 +54,6 @@ int main() {
         scanf("%lf", &nums[i]);
     SumMax sm = findSum(0, N - 1);
     printf("sum:%.2f left:%d right:%d", sm.sum, sm.left, sm.right);
+    free(nums);
     return 0;
 }
