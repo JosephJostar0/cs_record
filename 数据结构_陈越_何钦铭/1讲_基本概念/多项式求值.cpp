@@ -3,7 +3,7 @@
 #include <iostream>
 #define MAXN 10
 #define MAXK 1e7
-clock_t start, stop;
+clock_t start, stop; //最终时间(秒)=打点次数/每秒钟打点数
 double duration;
 
 double f1(int n, double a[], double x) {
