@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <iostream>
-int n, m, dis[100][100], visit[100], tag;
+int n, m, dis[100][100], visit[100];
 
 bool isCircle(int id) {
     visit[id] = 0;
