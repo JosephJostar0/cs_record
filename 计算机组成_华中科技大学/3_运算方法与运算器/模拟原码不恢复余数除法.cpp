@@ -36,7 +36,7 @@ void myDiv(int a, int b) {
     }
     while (x < 0)
         x += y;
-    y *= SF ? -1 : 1;
+    quotient *= SF ? -1 : 1;
 
     outHex(a), printf(" / "), outHex(b), printf(" = ");
     outHex(quotient), printf("...");
