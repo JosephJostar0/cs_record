@@ -12,6 +12,13 @@ void outHex(int t) {
     printf("%08x", t);
 }
 
+void outResult(int t, int SF = 0) {
+    if (SF)
+        printf("1.%08x", t);
+    else
+        printf("0.%08x", t);
+}
+
 void myDiv(int a, int b) {
     int SF = getSignFlag(a, b);
     int x = std::abs(a), y = std::abs(b);
@@ -36,11 +43,10 @@ void myDiv(int a, int b) {
     }
     while (x < 0)
         x += y;
-    quotient *= SF ? -1 : 1;
 
     outHex(a), printf(" / "), outHex(b), printf(" = ");
-    outHex(quotient), printf("...");
-    outHex(x), printf("*2^-32");
+    outResult(quotient, SF), printf("...");
+    outResult(x), printf("*2^-32");
 }
 
 int main() {
