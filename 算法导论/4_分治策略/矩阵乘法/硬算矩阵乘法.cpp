@@ -18,10 +18,8 @@ public:
 
 Martix multi(Martix A, Martix B) {
     Martix C(A.v.size(), B.v[0].size());
-    printf("A n=%d m=%d\nB n=%d m=%d\n", A.v.size(), A.v[0].size(), B.v.size(), B.v[0].size());
     if (A.v[0].size() != B.v.size())
         return C;
-    printf("in\n");
     for (int i = 0; i < A.v.size(); i++)
         for (int j = 0; j < B.v[0].size(); j++)
             for (int k = 0; k < B.v.size(); k++)
