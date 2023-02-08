@@ -5,10 +5,10 @@ int dp[MAXN][2];
 int DP(int n, int i) {
     if (dp[n][i])
         return dp[n][i];
-    int over = DP(n - 1, 0);
-    int pass = DP(n - 1, 1);
-    dp[n][0] = pass % MOD;
-    dp[n][1] = (pass + over) * 9 % MOD;
+    int zero = DP(n - 1, 0);
+    int not_zero = DP(n - 1, 1);
+    dp[n][0] = not_zero % MOD;
+    dp[n][1] = (not_zero + zero) * 9 % MOD;
     return dp[n][i];
 }
 
