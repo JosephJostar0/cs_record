@@ -19,5 +19,6 @@
 13. 《算法导论》机械工业出版社
 14. 晴问OJ
 15. 操作系统 408考试复习
+16. CS50 Introduction to Artificial Intelligence With Python ,Harvard
 
 这个库也许会一直更新下去。。。
