@@ -1,4 +1,4 @@
-/.vscode/
-/debug/
+.vscode/
+debug/
 *.exe
 *.clang-format
