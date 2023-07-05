@@ -57,7 +57,17 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
+    link = corpus[page]
+    prob = dict()
+    if len(link) == 0:
+        for i in corpus:
+            prob[i] = 1 / len(corpus)
+        return prob
+    for i in corpus:
+        prob[i] = (1 - damping_factor) / len(corpus)
+    for i in link:
+        prob[i] += damping_factor / len(link)
+    return prob
 
 
 def sample_pagerank(corpus, damping_factor, n):
@@ -69,7 +79,17 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    page = random.choice(list(corpus.keys()))
+    prob = transition_model(corpus, page, damping_factor)
+    ranks = dict()
+    ranks[page] = ranks.get(page, 0) + 1
+    for i in range(n - 1):
+        page = random.choices(list(prob.keys()), list(prob.values()), k=1)[0]
+        ranks[page] = ranks.get(page, 0) + 1
+        prob = transition_model(corpus, page, damping_factor)
+    for i in ranks:
+        ranks[i] /= n
+    return ranks
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -81,7 +101,24 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    prob = dict()
+    for i in corpus:
+        prob[i] = 1 / len(corpus)
+    while True:
+        ranks = dict()
+        for it in prob.keys():
+            ranks[it] = (1 - damping_factor) / len(corpus)
+            temp = 0.0
+            for page in corpus.keys():
+                if it in corpus[page]:
+                    temp += prob[page]/len(corpus[page])
+                elif len(corpus[page]) == 0:
+                    temp += prob[page]/len(corpus)
+            ranks[it] += damping_factor * temp
+        if all(abs(ranks[i] - prob[i]) <= 0.001 for i in prob.keys()):
+            # print(f"iterate check : {sum(ranks.values())}")
+            return ranks
+        prob = ranks
 
 
 if __name__ == "__main__":
