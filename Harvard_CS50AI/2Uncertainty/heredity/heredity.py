@@ -139,7 +139,25 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    raise NotImplementedError
+    prob = 1.0
+    for name in people:
+        man = people[name]
+        gnums = []
+        trait_out = False
+        for i in [name, man['mother'], man['father']]:
+            if i is None:
+                continue
+            gnums.append(1 if i in one_gene else 2 if i in two_genes else 0)
+        gnum = gnums[0]
+        if name in have_trait:
+            trait_out = True
+        man_prob = PROBS["gene"][gnum]
+        if man['mother'] is not None:
+            parents = gnums[1:]
+            man_prob = generate_son(gnum, parents)
+        prob *= man_prob
+        prob *= PROBS['trait'][gnum][trait_out]
+    return prob
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
@@ -149,7 +167,11 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    for man in probabilities:
+        gnum = 1 if man in one_gene else 2 if man in two_genes else 0
+        trait = True if man in have_trait else False
+        probabilities[man]['gene'][gnum] += p
+        probabilities[man]['trait'][trait] += p
 
 
 def normalize(probabilities):
@@ -157,7 +179,35 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    raise NotImplementedError
+    for person in probabilities:
+        for key in probabilities[person]:
+            sum = 0.0
+            for it in probabilities[person][key]:
+                sum += probabilities[person][key][it]
+            for it in probabilities[person][key]:
+                probabilities[person][key][it] /= sum
+
+
+def generate_son(gnum: int, parents: list):
+    '''
+    Given the parents' genes, find the probability that the child will inherit a specified number of the genes
+    '''
+    prob = 1.0
+    getg = []
+    for it in parents:
+        if it == 0:
+            getg.append(PROBS["mutation"])
+        elif it == 1:
+            getg.append(0.5)
+        else:
+            getg.append(1 - PROBS["mutation"])
+    if gnum == 0:
+        prob *= (1-getg[0])*(1-getg[1])
+    elif gnum == 2:
+        prob *= getg[0]*getg[1]
+    else:
+        prob *= getg[0]*(1-getg[1])+(1-getg[0])*getg[1]
+    return prob
 
 
 if __name__ == "__main__":
