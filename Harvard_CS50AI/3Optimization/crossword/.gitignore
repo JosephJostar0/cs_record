@@ -1,0 +1,5 @@
+data/
+assets/
+cmd.txt
+*.png
+web.py
