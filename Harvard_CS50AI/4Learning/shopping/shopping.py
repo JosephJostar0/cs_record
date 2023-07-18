@@ -1,5 +1,6 @@
 import csv
 import sys
+import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -33,8 +34,7 @@ def main():
 
 def load_data(filename):
     """
-    Load shopping data from a CSV file `filename` and convert into a list of
-    evidence lists and a list of labels. Return a tuple (evidence, labels).
+    Load shopping data from a CSV file `filename` and convert into a list of evidence lists and a list of labels. Return a tuple (evidence, labels).
 
     evidence should be a list of lists, where each list contains the
     following values, in order:
@@ -59,18 +59,38 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    df = pd.read_csv(filename)
+    df["Month"] = df["Month"].replace(
+        ["Jan", "Feb", "Mar", "Apr", "May", "June",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    ).astype(int)
+    df["VisitorType"] = df["VisitorType"].replace(
+        ["Returning_Visitor", "New_Visitor", "Other"],
+        [1, 0, 0]
+    ).astype(int)
+    df["Weekend"] = df["Weekend"].replace(
+        [True, False], [1, 0]
+    ).astype(int)
+    df["Revenue"] = df["Revenue"].replace(
+        [True, False], [1, 0]
+    ).astype(int)
+
+    evidence = df.drop("Revenue", axis=1).values.tolist()
+    label = df["Revenue"].values.tolist()
+    return (evidence, label)
 
 
 def train_model(evidence, labels):
     """
-    Given a list of evidence lists and a list of labels, return a
-    fitted k-nearest neighbor model (k=1) trained on the data.
+    Given a list of evidence lists and a list of labels, return a fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    model = KNeighborsClassifier(n_neighbors=1)
+    model.fit(evidence, labels)
+    return model
 
 
-def evaluate(labels, predictions):
+def evaluate(labels: list, predictions: list):
     """
     Given a list of actual labels and a list of predicted labels,
     return a tuple (sensitivity, specificity).
@@ -85,7 +105,15 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    sensitivity, specificity = 0, 0
+    for i in range(len(labels)):
+        if labels[i] == 1 and predictions[i] == 1:
+            sensitivity += 1
+        elif labels[i] == 0 and predictions[i] == 0:
+            specificity += 1
+    sensitivity /= labels.count(1)
+    specificity /= labels.count(0)
+    return (sensitivity, specificity)
 
 
 if __name__ == "__main__":
