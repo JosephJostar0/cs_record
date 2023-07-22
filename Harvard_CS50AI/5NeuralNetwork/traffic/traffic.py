@@ -3,6 +3,7 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
+import pathlib
 
 from sklearn.model_selection import train_test_split
 
@@ -44,7 +45,7 @@ def main():
         print(f"Model saved to {filename}.")
 
 
-def load_data(data_dir):
+def load_data(data_dir) -> tuple:
     """
     Load image data from directory `data_dir`.
 
@@ -58,16 +59,51 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-    raise NotImplementedError
+    if not pathlib.Path(data_dir).exists():
+        raise FileNotFoundError(f"Directory {data_dir} not found")
+    images, labels = [], []
+    for category in range(NUM_CATEGORIES):
+        path = pathlib.Path(data_dir) / str(category)
+        if not path.exists():
+            raise FileNotFoundError(f"Directory {path} not found")
+        for image in path.iterdir():
+            img = cv2.imread(os.path.join(path, image.name))
+            img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
+            images.append(img)
+            labels.append(category)
+    return (images, labels)
 
 
-def get_model():
+def get_model() -> tf.keras.models.Sequential:
     """
-    Returns a compiled convolutional neural network model. Assume that the
-    `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
+    Returns a compiled convolutional neural network model. 
+
+    Assume that the `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
+    (that is, an array representing an image of width IMG_WIDTH, height IMG_HEIGHT, and 3 values for each pixel for red, green, and blue).
+
+
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Conv2D(
+            32, (3, 3), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(
+            64, (3, 3), activation="relu", input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+        ),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation="relu"),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax")
+    ])
+    model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+    return model
 
 
 if __name__ == "__main__":
