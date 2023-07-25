@@ -18,6 +18,7 @@ NONTERMINALS = """
 S -> N V
 """
 
+
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
@@ -55,24 +56,26 @@ def main():
             print(" ".join(np.flatten()))
 
 
-def preprocess(sentence):
+def preprocess(sentence: str) -> list:
     """
     Convert `sentence` to a list of its words.
     Pre-process sentence by converting all characters to lowercase
     and removing any word that does not contain at least one alphabetic
     character.
     """
-    raise NotImplementedError
+    words = nltk.word_tokenize(sentence.lower())
+    words = [word for word in words if any(char.isalpha() for char in word)]
+    return words
 
 
-def np_chunk(tree):
+def np_chunk(tree: nltk.tree) -> list:
     """
     Return a list of all noun phrase chunks in the sentence tree.
     A noun phrase chunk is defined as any subtree of the sentence
     whose label is "NP" that does not itself contain any other
     noun phrases as subtrees.
     """
-    raise NotImplementedError
+    return []
 
 
 if __name__ == "__main__":
