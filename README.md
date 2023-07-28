@@ -20,6 +20,7 @@
 14. 《算法导论》机械工业出版社
 15. 晴问OJ
 16. 操作系统 408考试复习
-17. CS50 Introduction to Artificial Intelligence With Python ,Harvard
+17. CS50 Introduction to Artificial Intelligence With Python ,Harvard, Edx
+18. Build a Modern Computer from First Principles: From Nand to Tetris, Hebrew University of Jerusalem, Coursera
 
 这个库也许会一直更新下去。。。
