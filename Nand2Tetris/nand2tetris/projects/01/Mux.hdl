@@ -15,4 +15,30 @@ CHIP Mux {
 
     PARTS:
     // Put your code here:
+    // Mux(a, b, sel) = (a&!sel) | (b&sel) = !(!(a&!sel) & !(b&sel)) = (a Nand !sel) Nand (b Nand sel)
+
+    /*
+    Mux(a, b, sel) =
+    Or(And(a, Not(sel)), And(b, sel)) =
+    Not(
+        And(
+            Not(And(a, Not(sel))),
+            Not(And(b, sel))
+        )
+    ) =
+    Nand(
+        Nand(a, Not(sel)),
+        Nand(b, sel)
+    )
+    */
+
+    // Not(in=sel, out=NOTsel);
+    // And(a=a, b=NOTsel, out=a0);
+    // And(a=b, b=sel, out=b0);
+    // Or(a=a0, b=b0, out=out);
+
+    Not(in=sel, out=NOTsel);
+    Nand(a=a, b=NOTsel, out=aNandNsel);
+    Nand(a=b, b=sel, out=bNANDsel);
+    Nand(a=aNandNsel, b=bNANDsel, out=out);
 }
