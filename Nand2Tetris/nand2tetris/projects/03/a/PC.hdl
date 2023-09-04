@@ -17,4 +17,17 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    /*
+    out[t+1] = out[t];
+    if inc[t] is 1:
+        out[t+1] = out[t] + 1;
+    if load[t] is 1:
+        out[t+1] = in[t];
+    if reset[t] is 1:
+        out[t+1] = 0;
+    */
+    Add16(a=state, b[0]=inc, out=temp0);
+    Mux16(a=temp0, b=in, sel=load, out=temp1);
+    Mux16(a=temp1, b=false, sel=reset, out=temp2);
+    Register(in=temp2, load=true, out=out, out=state);
 }
