@@ -40,4 +40,67 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    /* 
+        if A_instruction:
+            ARegister = instruction
+            addressM = instruction
+        else:
+            if d0 is 1:     # d0 = instruction[5]
+                ARegister = AluOutput
+            addressM = ARegister
+            
+            AluInput0 = DRegister
+            AluInput1 = ARegister if a is 1 else Min
+            AluOutput, zr, ng = ALU(AluInput0, AluInput1, c0, c1, c2, c3, c4, c5, c6)   # c0 = instruction[11]...
+            
+            outM = AluOutput
+            writeM = d2     # d2 = instruction[3]
+
+            if d1 is 1:     # d1 = instruction[4]
+                DRigister = AluOutput
+            
+            PC += 1
+            if Condition() is true or (no conditional goto):
+                PC = ARegister
+            if reset is 1:
+                PC = 0
+            pc = PC
+        
+        def Condition():
+            if j1 is 1 and outM < 0:
+                return true
+            elif j2 is 1 and outM is 0:
+                return true
+            elif j3 is 1 and outM > 0:
+                return true
+            return false
+    */
+
+    // ARegister & addressM
+    Not(in=instruction[15], out=isAIns);
+    Or(a=isAIns, b=instruction[5], out=isArSave);
+    Mux16(a=aluOut, b=instruction, sel=isAIns, out=arIn);
+    ARegister(in=arIn, load=isArSave, out=arOut, out[0..14]=addressM);
+
+    // ALU & outM
+    Mux16(a=arOut, b=inM, sel=instruction[12], out=aluIn1);
+    ALU(x=drOut, y=aluIn1, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=aluOut, out=outM, zr=aluZr, ng=aluNg);
+
+    // writeM
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // Dregister
+    And(a=instruction[15], b=instruction[4], out=isDrSave);
+    DRegister(in=aluOut, load=isDrSave, out=drOut);
+
+    // PC
+    And(a=instruction[2], b=aluNg, out=isJ1);
+    And(a=instruction[1], b=aluZr, out=isJ2);
+    Or(a=aluNg, b=aluZr, out=notPosi);
+    Not(in=notPosi, out=isPosi);
+    And(a=instruction[0], b=isPosi, out=isJ3);
+    Or(a=isJ1, b=isJ2, out=temp);
+    Or(a=temp, b=isJ3, out=isJ);
+    And(a=instruction[15], b=isJ, out=isLoad);
+    PC(in=arOut, load=isLoad, inc=true, reset=reset, out[0..14]=pc);
 }
