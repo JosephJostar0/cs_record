@@ -5,8 +5,9 @@ temp/
 *.cmp
 *.out
 *.tst
+*.hack
+*.pdf
 
-nand2tetris/projects/05/
 nand2tetris/projects/06/
 nand2tetris/projects/07/
 nand2tetris/projects/08/
