@@ -4,6 +4,9 @@ import re
 
 from const import *
 
+labelDict = {}
+memCnt = 16
+
 
 def getPath() -> tuple[Path, Path]:
     arguments = sys.argv
@@ -28,10 +31,24 @@ def getFileCleanedLines(fpath: Path) -> list[str]:
 
     def cleanLines(content: str) -> list:
         cleanedLines = []
+        cnt = 0
         for line in content.split('\n'):
             cline = line.strip()
             if cline and not cline.startswith("//"):
-                cleanedLines.append(cline.replace(" ", ""))
+                if not cline.startswith('('):
+                    cline = re.sub(r'//.*', '', cline)
+                    cleanedLines.append(cline.replace(" ", ""))
+                    cnt += 1
+                elif cline.startswith('(') and cline.endswith(')'):
+                    label = re.findall(r'\((.*?)\)', cline)
+                    if len(label) != 1:
+                        raise ValueError(f'{line} is ungrammatical')
+                    if cnt > MAX_INT:
+                        raise ValueError(
+                            f'program is too long to run in memery')
+                    labelDict[label[0]] = cnt
+                else:
+                    raise ValueError(f'{line} is ungrammatical')
         return cleanedLines
 
     try:
@@ -42,6 +59,8 @@ def getFileCleanedLines(fpath: Path) -> list[str]:
 
 
 def aInstruction(line: str) -> str:
+    global memCnt, labelDict
+
     def isInt(line: str) -> bool:
         try:
             int(line)
@@ -50,28 +69,43 @@ def aInstruction(line: str) -> str:
             return False
 
     temp = line.replace(A_TAG, '')
-    if isInt(temp):
-        num = int(temp)
-        if MIN_INT <= num <= MAX_INT:
-            if num < 0:
-                num += 2**A_INT_BIT
-            return A_START + bin(num)[2:].zfill(15)
+
+    if not isInt(temp):
+        if temp in PRE_DEFINED_SYMBOLS.keys():
+            temp = PRE_DEFINED_SYMBOLS[temp]
+        elif temp in labelDict.keys():
+            temp = labelDict[temp]
         else:
-            raise ValueError(
-                f"{line} can't be represented with 15-bit two's complement"
-            )
+            labelDict[temp] = str(memCnt)
+            temp = memCnt
+            memCnt += 1
+
+    num = int(temp)
+    if MIN_INT <= num <= MAX_INT:
+        return A_START + bin(num)[2:].zfill(15)
     else:
-        return ''
+        raise ValueError(
+            f"{line} can't be represented with 15-bit two's complement"
+        )
 
 
 def cInstruction(line: str) -> str:
     def strSplit(line: str):
-        matchStr = re.match(PATTERN, line)
-        if matchStr:
-            part1, part2, part3 = matchStr.groups()
-            return part1, part2 if part2 else "", part3 if part3 else ""
+        if ';' in line and '=' in line:
+            matchStr = re.match(PATTERN_BOTH, line)
+            dest, comp, jump = matchStr.groups()
+        elif ';' in line:
+            matchStr = re.match(PATTERN_SEM, line)
+            comp, jump = matchStr.groups()
+            dest = ""
+        elif '=' in line:
+            matchStr = re.match(PATTERN_EQ, line)
+            dest, comp = matchStr.groups()
+            jump = ""
         else:
-            return line, "", ""
+            comp = line
+            dest = jump = ""
+        return dest, comp, jump
 
     dest, comp, jump = strSplit(line)
     try:
@@ -79,7 +113,10 @@ def cInstruction(line: str) -> str:
         comp = COMP_DIC[comp]
         jump = JUMP_DIC[jump]
     except KeyError:
-        raise ValueError(f'{line} is ungrammatical') from None
+        print(dest)
+        print(comp)
+        print(jump)
+        raise ValueError(f'{line} is ungrammatical')
     return C_START + comp + dest + jump
 
 
