@@ -1,5 +1,8 @@
 import sys
 from pathlib import Path
+import re
+
+from const import *
 
 
 def getPath() -> tuple[Path, Path]:
@@ -39,15 +42,54 @@ def getFileCleanedLines(fpath: Path) -> list[str]:
 
 
 def aInstruction(line: str) -> str:
-    pass
+    def isInt(line: str) -> bool:
+        try:
+            int(line)
+            return True
+        except ValueError:
+            return False
+
+    temp = line.replace(A_TAG, '')
+    if isInt(temp):
+        num = int(temp)
+        if MIN_INT <= num <= MAX_INT:
+            if num < 0:
+                num += 2**A_INT_BIT
+            return A_START + bin(num)[2:].zfill(15)
+        else:
+            raise ValueError(
+                f"{line} can't be represented with 15-bit two's complement"
+            )
+    else:
+        return ''
 
 
 def cInstruction(line: str) -> str:
-    pass
+    def strSplit(line: str):
+        matchStr = re.match(PATTERN, line)
+        if matchStr:
+            part1, part2, part3 = matchStr.groups()
+            return part1, part2 if part2 else "", part3 if part3 else ""
+        else:
+            return line, "", ""
+
+    dest, comp, jump = strSplit(line)
+    try:
+        dest = DEST_DIC[dest]
+        comp = COMP_DIC[comp]
+        jump = JUMP_DIC[jump]
+    except KeyError:
+        raise ValueError(f'{line} is ungrammatical') from None
+    return C_START + comp + dest + jump
 
 
-def transeInstruction(lines: list) -> list:
+def transeInstruction(lines: list[str]) -> list:
     result = []
+    for line in lines:
+        if line.startswith('@'):
+            result.append(aInstruction(line))
+        else:
+            result.append(cInstruction(line))
     return result
 
 
