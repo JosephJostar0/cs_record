@@ -1,9 +1,8 @@
 import sys
 from pathlib import Path
-import re
 
 
-def getPath():
+def getPath() -> tuple[Path, Path]:
     arguments = sys.argv
 
     if len(arguments) < 2:
@@ -20,42 +19,46 @@ def getPath():
     return fpath, savePath
 
 
-def getFileCleanedLines(fpath: Path) -> list:
+def getFileCleanedLines(fpath: Path) -> list[str]:
     if not fpath.exists():
         raise FileNotFoundError(f"File '{fpath}' does not exist.")
 
     def cleanLines(content: str) -> list:
         cleanedLines = []
         for line in content.split('\n'):
-            line: str
             cline = line.strip()
             if cline and not cline.startswith("//"):
-                cleanedLines.append(cline)
+                cleanedLines.append(cline.replace(" ", ""))
         return cleanedLines
 
     try:
         with fpath.open('r', encoding='utf-8') as file:
-            content = file.read()
+            return cleanLines(file.read())
     except UnicodeDecodeError:
-        print(f"File '{fpath}' is not a valid text file.")
         raise Exception(f"File '{fpath}' is not a valid text file.") from None
 
-    return cleanLines(re.sub(r'/\*.*?\*/', '', content))
 
-
-def getClearLines() -> list:
+def aInstruction(line: str) -> str:
     pass
 
 
-def aInstruction():
+def cInstruction(line: str) -> str:
     pass
 
 
-def cInstruction():
-    pass
+def transeInstruction(lines: list) -> list:
+    result = []
+    return result
+
+
+def saveResult(savePath: Path, result: list[str]):
+    with open(savePath, 'w', encoding='utf-8') as file:
+        for item in result:
+            file.write(item+'\n')
 
 
 if __name__ == '__main__':
     filePath, savePath = getPath()
     lines = getFileCleanedLines(filePath)
-    print(lines)
+    result = transeInstruction(lines)
+    saveResult(savePath, result)
