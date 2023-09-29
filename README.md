@@ -4,23 +4,21 @@
 
 目前我已经看过/学过或正在看/正在学的有:
 
-1. 《啊哈算法！》 啊哈磊
-2. 《数学女孩》 结城浩
-3. 《数学女孩2费马大定理》 结城浩
-4. 《数学女孩3哥德尔不完备定理》 结城浩
-5. 《数学女孩4随机算法》结城浩
-6. 《浪潮之巅》吴军
-7. PAT程序设计能力考试
-8. 数据结构 中国大学慕课 浙江大学
-9. 计算机组成原理 中国大学慕课 华中科技大学
-10. 计算机系统基础 中国大学慕课 南京大学
-11. CSAPP 深入理解计算机系统, CMU
-12. 《具体数学_计算机科学基础》高德纳...
-13. 《计算之魂》 吴军
-14. 《算法导论》机械工业出版社
-15. 晴问OJ
-16. 操作系统 408考试复习
-17. CS50 Introduction to Artificial Intelligence With Python ,Harvard, Edx
-18. Build a Modern Computer from First Principles: From Nand to Tetris, Hebrew University of Jerusalem, Coursera
+1. [《啊哈算法！》](./啊哈算法/) 啊哈磊
+2. [《数学女孩》系列 结城浩](./数学女孩/)
+3. 《浪潮之巅》吴军
+4. [PAT程序设计能力考试](./PAT/)
+5. [数据结构 ZJU](./数据结构_陈越_何钦铭/) 中国大学慕课
+6. [计算机组成原理 HUST](./计算机组成_华中科技大学/) 中国大学慕课
+7. 计算机系统基础 NJU 中国大学慕课
+8. [CSAPP CMU](./CSAPP/)
+9. 《具体数学_计算机科学基础》高德纳...
+10. [《计算之魂》](./计算之魂/) 吴军
+11. [Introduction to Algorithms, MIT](./算法导论/)
+12. [晴问OJ](./晴问算法/)
+13. [《算法笔记》](./算法笔记/)
+14. [操作系统 408考试复习](./操作系统/)
+15. [CS50 Introduction to Artificial Intelligence With Python, Harvard](./Harvard_CS50AI/) Edx
+16. [Nand2Tetris, Hebrew University of Jerusalem](./Nand2Tetris/) Coursera
 
 这个库也许会一直更新下去。。。
