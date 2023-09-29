@@ -1,6 +1,7 @@
 *.zip
-nand2tetris/tools/
-nand2tetris/projects/demo/
+/tools
+/projects/demo
+/projects/00
 temp/
 *.cmp
 *.out
@@ -8,10 +9,10 @@ temp/
 *.pdf
 *.mp4
 
-nand2tetris/projects/07/
-nand2tetris/projects/08/
-nand2tetris/projects/09/
-nand2tetris/projects/10/
-nand2tetris/projects/11/
-nand2tetris/projects/12/
-nand2tetris/projects/13/
+/projects/07
+/projects/08
+/projects/09
+/projects/10
+/projects/11
+/projects/12
+/projects/13
