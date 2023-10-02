@@ -1,5 +1,6 @@
 MIN_INT = 0
 MAX_INT = 2**15 - 1
+MEM_CNT = 16
 
 A_INT_BIT = 15
 A_TAG = '@'
