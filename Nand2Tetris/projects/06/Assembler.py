@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 from const import *
 
+
 class Assembler:
     def __init__(self):
         self.labelDict = {}
@@ -13,21 +14,8 @@ class Assembler:
         self.result = None
 
     def __init__(self, filePath: Path, savePath: Path):
-        self.labelDict = {}
-        self.memCnt = MEM_CNT
-        self.filePath = filePath
-        self.savePath = savePath
-        self.lines = None
-        self.result = None
+        self.setPaths(filePath, savePath)
 
-    def clear(self):
-        self.labelDict = {}
-        self.memCnt = MEM_CNT
-        self.filePath = None
-        self.savePath = None
-        self.lines = None
-        self.result = None
-    
     def setPaths(self, filePath: Path, savePath: Path):
         self.labelDict = {}
         self.memCnt = MEM_CNT
@@ -37,11 +25,11 @@ class Assembler:
         self.result = None
 
     def runAssembler(self):
-        self.setCleanedLines()
-        self.transeInstruction()
+        self.readAndCleanLines()
+        self.transInstruction()
         self.saveResult()
 
-    def setCleanedLines(self):
+    def readAndCleanLines(self):
         def cleanLines(content: str) -> list:
             cleanedLines = []
             cnt = 0
@@ -67,16 +55,15 @@ class Assembler:
         fpath = self.filePath
         if not fpath:
             raise Exception("File path is not ready to read.")
-        if not fpath.exists():
-            raise FileNotFoundError(f"File '{fpath}' does not exist.")
-
         try:
             with fpath.open('r', encoding='utf-8') as file:
                 self.lines = cleanLines(file.read())
         except UnicodeDecodeError:
             raise f"File '{fpath}' is not a valid text file." from None
+        except FileNotFoundError:
+            raise f"File '{fpath}' does not exist." from None
 
-    def transeInstruction(self):
+    def transInstruction(self):
         def aInstruction(line: str) -> str:
             def isInt(line: str) -> bool:
                 try:
@@ -129,7 +116,7 @@ class Assembler:
             except KeyError:
                 raise ValueError(f'{line} is ungrammatical')
             return C_START + comp + dest + jump
-        
+
         if not self.lines:
             raise Exception("Cleaned lines are not ready to transe.")
         result = []
@@ -151,13 +138,12 @@ class Assembler:
                 for item in self.result:
                     file.write(item+'\n')
         except FileNotFoundError:
-            raise FileNotFoundError(f"File '{self.savePath}' does not exist.") from None
+            raise f"File '{self.savePath}' does not exist." from None
 
     @staticmethod
     def getAssembler():
         def getPath() -> tuple[Path, Path]:
             arguments = sys.argv
-
             if len(arguments) < 2:
                 raise IndexError("Please provide target file_path argument")
             if len(arguments) > 3:
