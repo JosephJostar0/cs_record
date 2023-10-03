@@ -46,13 +46,10 @@ class Assembler:
             cleanedLines = []
             cnt = 0
             for line in content.split('\n'):
-                cline = line.strip()
+                cline = re.sub(r'//.*', '', line.strip())
                 if len(cline) == 0:
                     continue
                 if not cline.startswith('('):
-                    cline = re.sub(r'//.*', '', cline)
-                    if len(cline) == 0:
-                        continue
                     cleanedLines.append(cline.replace(" ", ""))
                     cnt += 1
                 elif cline.startswith('(') and cline.endswith(')'):
@@ -77,8 +74,7 @@ class Assembler:
             with fpath.open('r', encoding='utf-8') as file:
                 self.lines = cleanLines(file.read())
         except UnicodeDecodeError:
-            raise Exception(
-                f"File '{fpath}' is not a valid text file.") from None
+            raise f"File '{fpath}' is not a valid text file." from None
 
     def transeInstruction(self):
         def aInstruction(line: str) -> str:
@@ -150,10 +146,12 @@ class Assembler:
             raise Exception("Save path is not ready to save.")
         if not self.result:
             raise Exception("Result is not ready to save.")
-
-        with open(self.savePath, 'w', encoding='utf-8') as file:
-            for item in self.result:
-                file.write(item+'\n')
+        try:
+            with open(self.savePath, 'w', encoding='utf-8') as file:
+                for item in self.result:
+                    file.write(item+'\n')
+        except FileNotFoundError:
+            raise FileNotFoundError(f"File '{self.savePath}' does not exist.") from None
 
     @staticmethod
     def getAssembler():
@@ -178,5 +176,4 @@ class Assembler:
 
 
 if __name__ == '__main__':
-    assembler = Assembler.getAssembler()
-    assembler.runAssembler()
+    Assembler.getAssembler().runAssembler()
