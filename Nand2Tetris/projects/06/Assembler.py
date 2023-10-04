@@ -5,14 +5,6 @@ from const import *
 
 
 class Assembler:
-    def __init__(self):
-        self.labelDict = {}
-        self.memCnt = MEM_CNT
-        self.filePath = None
-        self.savePath = None
-        self.lines = None
-        self.result = None
-
     def __init__(self, filePath: Path, savePath: Path):
         self.setPaths(filePath, savePath)
 

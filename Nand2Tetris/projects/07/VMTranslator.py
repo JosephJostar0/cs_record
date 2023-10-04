@@ -5,24 +5,14 @@ from const import *
 
 
 class VMTranslator:
-    def __init__(self):
-        self.fileName = None
-        self.filePath = None
-        self.savePath = None
-        self.lines = None
-        self.result = []
-
     def __init__(self, fpath: Path, savePath: Path):
-        self.fileName = fpath.stem
-        self.filePath = fpath
-        self.savePath = savePath
-        self.lines = None
-        self.result = []
+        self.setAll(fpath, savePath)
 
     def setAll(self, fpath: Path, savePath: Path):
         self.fileName = fpath.stem
         self.filePath = fpath
         self.savePath = savePath
+        self.cnt = 0
         self.lines = None
         self.result = []
 
@@ -61,53 +51,39 @@ class VMTranslator:
             except ValueError:
                 return False
 
-        def transPush(line: str):
+        def transPush(line: str) -> list[str]:
             command, segment, index = parseCommand(line)
             if command != 'push' or segment not in PUSH_SEGMENT or not isInt(index):
                 raise ValueError(f'{line} is ungrammatical')
 
-            if segment in SEGMENT_BASIC:
-                # addr=@segment+index; D=*addr; *sp=D; sp++
-                self.result.extend(genSegIns(segment, index))  # addr=seg+i
-                self.result.extend(SET_MADDR2D)  # D=*addr
-                self.result.extend(SET_D2STACK)  # D=*sp
-                self.result.extend(PUSH_INSTRUCTIONS)  # sp++
-            elif segment in SEGMENT_CONSTANT:
-                # D=index; *sp=D; sp++
-                self.result.extend([f'@{index}', 'D=A'])  # D=index
-                self.result.extend(SET_D2STACK)  # *sp=D
-                self.result.extend(PUSH_INSTRUCTIONS)  # sp++
-            elif segment in SEGMENT_STATIC:
-                pass
+            result = []
+            return result
 
-        def transPop(line: str):
+        def transPop(line: str) -> list[str]:
             command, segment, index = parseCommand(line)
             if command != 'pop' or segment not in POP_SEGMENT or not isInt(index):
                 raise ValueError(f'{line} is ungrammatical')
 
-            if segment in SEGMENT_BASIC:
-                # sp--; addr=@segment+index; D=*sp; *addr=D
-                self.result.extend(POP_INSTRUCTIONS)  # sp--
-                self.result.extend(genSegIns(segment, index))  # addr=seg+i
-                self.result.extend(SET_STACK2D)  # D=*sp
-                self.result.extend(SET_D2MADDR)  # *addr=D
-            elif segment in SEGMENT_STATIC:
-                pass
+            result = []
+            return result
 
-        def parseOthers(line: str):
+        def parseOthers(line: str) -> list[str]:
             if line not in ARI_LOGI_COMMANDS:
                 raise ValueError(f'{line} is ungrammatical')
+
+            result = []
+            return result
 
         if not self.lines:
             raise Exception("Lines is not ready to translate.")
         for line in self.lines:
             line: str
             if line.startswith('push'):
-                transPush(line)
+                self.result.extend(transPush(line))
             elif line.startswith('pop'):
-                transPop(line)
+                self.result.extend(transPop(line))
             else:
-                parseOthers(line)
+                self.result.extend(parseOthers(line))
 
     def saveResult(self):
         if not self.savePath:

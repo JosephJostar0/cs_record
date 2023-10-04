@@ -54,82 +54,17 @@ POP_INSTRUCTIONS = [
 
 AL_DICT = {
     'add': [
-        '@sp',
-        'A=M',
-        'D=M',
-        '@sp',
-        'M=M-1',
-        'A=M',
-        'M=D+M'
+
     ], 'sub': [
-        '@sp',
-        'A=M',
-        'D=M',
-        '@sp',
-        'M=M-1',
-        'A=M',
-        'M=M-D'
+
     ], 'neg': [
-        '@sp',
-        'A=M'
-        'M=-M'
+
     ], 'eq': [
-        '@sp',
-        'A=M',
-        'D=M',
-        '@sp',
-        'M=M-1',
-        'A=M',
-        'D=D-M',
-        '@__Equal',
-        'D;JEQ',
-        'D=0',
-        '@__EqEnd__',
-        '1;JMP',
-        '(__Equal)',
-        'D=1',
-        '(__EqEnd__)',
-        '@sp',
-        'A=M',
-        'M=D'
+
     ], 'gt': [
-        '@sp',
-        'A=M',
-        'D=M',
-        '@sp',
-        'M=M-1',
-        'A=M',
-        'D=D-M',
-        '@__Greater',
-        '-D;JGT',
-        'D=0',
-        '@__GtEnd__',
-        '1;JMP',
-        '(__Greater)',
-        'D=1',
-        '(__GtEnd__)',
-        '@sp',
-        'A=M',
-        'M=D'
+
     ], 'lt': [
-        '@sp',
-        'A=M',
-        'D=M',
-        '@sp',
-        'M=M-1',
-        'A=M',
-        'D=D-M',
-        '@__Lesser',
-        '-D;JLT',
-        'D=0',
-        '@__GtEnd__',
-        '1;JMP',
-        '(__Greater)',
-        'D=1',
-        '(__GtEnd__)',
-        '@sp',
-        'A=M',
-        'M=D'
+
     ], 'and': [
 
     ], 'or': [
@@ -138,35 +73,3 @@ AL_DICT = {
 
     ],
 }
-
-
-def genSegIns(segment: str, index: str, fileName: str = '') -> list[str]:
-    if segment in SEGMENT_BASIC:
-        return [  # addr = @segment + i
-            f'@{index}',
-            'D=A',
-            f'@{segment}',
-            'D=D+M',
-            '@addr',
-            'M=D'
-        ]
-    if segment in SEGMENT_CONSTANT:
-        return [  # D = i
-            f'@{index}',
-            'D=A'
-        ]
-    if segment in SEGMENT_STATIC:
-        return [  # M[fileName.i] = D
-            f'@{fileName}.{index}',
-            'M=D'
-        ]
-    if segment in SEGMENT_TEMP:
-        if int(index) > 7:
-            raise ValueError(f'{segment} {index} is ungrammatical')
-        return [  # addr = 5 + i
-            f'@{(int(index)+5)}',
-            'D=A',
-            '@addr',
-            'M=D'
-        ]
-    raise ValueError(f'{segment} {index} is ungrammatical')
