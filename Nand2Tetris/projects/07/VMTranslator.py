@@ -13,7 +13,7 @@ class VMTranslator:
         if savePath is None:
             if not filePath.exists():
                 raise FileNotFoundError(f"File '{filePath}' does not exist.")
-            savePath = Path(f'{filePath.parent}/{filePath.stem}.hack')
+            savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
         self.savePath = savePath
         self.cnt = 0
         self.lines = None
@@ -64,7 +64,7 @@ class VMTranslator:
             elif segment in SEG_BASIC:
                 result = [
                     BASIC_ALTER[segment], 'D=M',
-                    f'@{index}', 'A=A+D', 'D=M'
+                    f'@{index}', 'A=D+A', 'D=M'
                 ]
             elif segment in SEG_STATIC:
                 result = [f'@{self.filePath.stem}.{index}', 'D=M']
@@ -73,7 +73,7 @@ class VMTranslator:
                     raise f'{line} is ungrammatical: {index} is out of range'
                 result = [
                     f'@{TEMP}', 'D=A',
-                    f'@{index}', 'A=A+D', 'D=M',
+                    f'@{index}', 'A=D+A', 'D=M',
                 ]
             elif segment in SEG_POINT:
                 if index != '0' and index != '1':
@@ -93,22 +93,22 @@ class VMTranslator:
             if segment in SEG_BASIC:
                 result = [
                     BASIC_ALTER[segment], 'D=M', f'@{index}',
-                    'D=A+D', ADDR, 'M=D',  # R15=addr
-                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    'D=D+A', ADDR, 'M=D',  # R15=addr
+                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
                     ADDR, 'A=M', 'M=D',  # M[R15]=D
                 ]
             elif segment in SEG_STATIC:
                 result = [
-                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
                     f'@{self.filePath.stem}.{index}', 'M=D'
                 ]
             elif segment in SEG_TEMP:
                 if not 0 <= int(index) <= INDEX_MAX:
                     raise f'{line} is ungrammatical: {index} is out of range'
                 result = [
-                    f'@{TEMP}', 'D=A', f'@{index}', 'D=A+D',  # D=addr
+                    f'@{TEMP}', 'D=A', f'@{index}', 'D=D+A',  # D=addr
                     ADDR, 'M=D',  # R15=addr
-                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
                     ADDR, 'A=M', 'M=D',  # M[R15]=D
                 ]
             elif segment in SEG_POINT:
@@ -116,7 +116,7 @@ class VMTranslator:
                     raise f'{line} is ungrammatical: i must be 0 or 1'
                 current = 'THIS' if index == '0' else 'THAT'
                 result = [
-                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
                     f'@{current}', 'M=D'
                 ]
             else:
@@ -182,7 +182,7 @@ class VMTranslator:
             fpath = Path(arguments[1])
             if not fpath.exists():
                 raise FileNotFoundError(f"File '{fpath}' does not exist.")
-            savePath = Path(f'{fpath.parent}/{fpath.stem}.hack')
+            savePath = Path(f'{fpath.parent}/{fpath.stem}.asm')
             if len(arguments) == 3:
                 savePath = Path(arguments[2])
             return fpath, savePath

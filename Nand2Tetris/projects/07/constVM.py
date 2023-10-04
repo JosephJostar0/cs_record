@@ -9,7 +9,7 @@ PUSH_SEGMENT = [
     'local', 'argument', 'this', 'that',
     'constant', 'static', 'pointer', 'temp',
 ]
-PUSH_COMMON = ['@sp', 'M=M+1', 'A=M-1', 'M=D']
+PUSH_COMMON = ['@SP', 'M=M+1', 'A=M-1', 'M=D']
 
 POP_SEGMENT = [
     'local', 'argument', 'this', 'that',
@@ -29,14 +29,14 @@ SEG_TEMP = ['temp']
 SEG_POINT = ['pointer']
 
 # A=sp-1
-_ARI1COMMON = ['@sp', 'A=M-1']
+_ARI1COMMON = ['@SP', 'A=M-1']
 ARI1 = {
     'neg': _ARI1COMMON + ['M=-M'],
     'not': _ARI1COMMON + ['M=!M']
 }
 
 # D=M[--sp], A=sp-1
-_ARI2COMMON = ['@sp', 'AM=M-1', 'D=M', '@sp', 'A=M-1']
+_ARI2COMMON = ['@SP', 'AM=M-1', 'D=M', 'A=A-1']
 ARI2 = {
     'add': _ARI2COMMON + ['M=D+M'],
     'sub': _ARI2COMMON + ['M=M-D'],
@@ -44,9 +44,9 @@ ARI2 = {
     'or': _ARI2COMMON + ['M=D|M'],
 }
 
-# D=M[sp-1], sp--, D=M[sp-1]-D, M[sp-1]=1,
-LOGI_PRE = ['@sp', 'AM=M-1', 'D=M', '@sp', 'A=M-1', 'D=M-D', 'M=1']
-LOGI_POST = ['@sp', 'A=M-1', 'M=0']
+# D=M[--sp], D=M[sp-1]-D, M[sp-1]=1,
+LOGI_PRE = ['@SP', 'AM=M-1', 'D=M', 'A=A-1', 'D=M-D', 'M=-1']
+LOGI_POST = ['@SP', 'A=M-1', 'M=0']
 LOGI = {
     'eq': ['D;JEQ'],
     'gt': ['D;JGT'],
