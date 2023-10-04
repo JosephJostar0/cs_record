@@ -5,11 +5,15 @@ from constVM import *
 
 
 class VMTranslator:
-    def __init__(self, fpath: Path, savePath: Path):
+    def __init__(self, fpath: Path, savePath: Path = None):
         self.setAll(fpath, savePath)
 
-    def setAll(self, fpath: Path, savePath: Path):
-        self.filePath = fpath
+    def setAll(self, filePath: Path, savePath: Path = None):
+        self.filePath = filePath
+        if savePath is None:
+            if not filePath.exists():
+                raise FileNotFoundError(f"File '{filePath}' does not exist.")
+            savePath = Path(f'{filePath.parent}/{filePath.stem}.hack')
         self.savePath = savePath
         self.cnt = 0
         self.lines = None

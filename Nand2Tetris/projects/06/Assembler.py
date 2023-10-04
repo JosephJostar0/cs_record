@@ -5,13 +5,17 @@ from constASM import *
 
 
 class Assembler:
-    def __init__(self, filePath: Path, savePath: Path):
+    def __init__(self, filePath: Path, savePath: Path = None):
         self.setPaths(filePath, savePath)
 
-    def setPaths(self, filePath: Path, savePath: Path):
+    def setPaths(self, filePath: Path, savePath: Path = None):
         self.labelDict = {}
         self.memCnt = MEM_CNT
         self.filePath = filePath
+        if savePath is None:
+            if not filePath.exists():
+                raise FileNotFoundError(f"File '{filePath}' does not exist.")
+            savePath = Path(f'{filePath.parent}/{filePath.stem}.hack')
         self.savePath = savePath
         self.lines = None
         self.result = None
