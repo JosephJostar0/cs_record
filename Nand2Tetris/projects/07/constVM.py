@@ -6,13 +6,13 @@ ADDR = '@R15'
 INDEX_MAX = 7
 
 PUSH_SEGMENT = [
-    'local', 'arguement', 'this', 'that',
+    'local', 'argument', 'this', 'that',
     'constant', 'static', 'pointer', 'temp',
 ]
 PUSH_COMMON = ['@sp', 'M=M+1', 'A=M-1', 'M=D']
 
 POP_SEGMENT = [
-    'local', 'arguement', 'this', 'that',
+    'local', 'argument', 'this', 'that',
     'static', 'pointer', 'temp',
 ]
 
@@ -20,7 +20,7 @@ SEG_CONST = ['constant']
 SEG_BASIC = ['local', 'argument', 'this', 'that']
 BASIC_ALTER = {
     'local': '@LCL',
-    'arguement': '@ARG',
+    'argument': '@ARG',
     'this': '@THIS',
     'that': '@THAT',
 }

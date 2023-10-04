@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 import re
-from const import *
+from constVM import *
 
 
 class VMTranslator:
