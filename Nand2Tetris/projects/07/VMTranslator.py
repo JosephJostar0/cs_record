@@ -59,17 +59,19 @@ class VMTranslator:
                 result = [f'@{index}', 'D=A']
             elif segment in SEG_BASIC:
                 result = [
-                    f'@{segment.upper()}', 'D=A',
+                    BASIC_ALTER[segment], 'D=M',
                     f'@{index}', 'A=A+D', 'D=M'
                 ]
             elif segment in SEG_STATIC:
                 result = [f'@{self.filePath.stem}.{index}', 'D=M']
-            elif segment in SEGMENT_TEMP:
+            elif segment in SEG_TEMP:
+                if not 0 <= int(index) <= INDEX_MAX:
+                    raise f'{line} is ungrammatical: {index} is out of range'
                 result = [
                     f'@{TEMP}', 'D=A',
                     f'@{index}', 'A=A+D', 'D=M',
                 ]
-            elif segment in SEGMENT_POINTER:
+            elif segment in SEG_POINT:
                 if index != '0' and index != '1':
                     raise f'{line} is ungrammatical: i must be 0 or 1'
                 current = 'THIS' if index == '0' else 'THAT'
@@ -84,15 +86,35 @@ class VMTranslator:
             if command != 'pop' or segment not in POP_SEGMENT or not isInt(index):
                 raise ValueError(f'{line} is ungrammatical')
 
-            result = []
             if segment in SEG_BASIC:
-                pass
+                result = [
+                    BASIC_ALTER[segment], 'D=M', f'@{index}',
+                    'D=A+D', ADDR, 'M=D',  # R15=addr
+                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    ADDR, 'A=M', 'M=D',  # M[R15]=D
+                ]
             elif segment in SEG_STATIC:
-                pass
-            elif segment in SEGMENT_TEMP:
-                pass
-            elif segment in SEGMENT_POINTER:
-                pass
+                result = [
+                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    f'@{self.filePath.stem}.{index}', 'M=D'
+                ]
+            elif segment in SEG_TEMP:
+                if not 0 <= int(index) <= INDEX_MAX:
+                    raise f'{line} is ungrammatical: {index} is out of range'
+                result = [
+                    f'@{TEMP}', 'D=A', f'@{index}', 'D=A+D',  # D=addr
+                    ADDR, 'M=D',  # R15=addr
+                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    ADDR, 'A=M', 'M=D',  # M[R15]=D
+                ]
+            elif segment in SEG_POINT:
+                if index != '0' and index != '1':
+                    raise f'{line} is ungrammatical: i must be 0 or 1'
+                current = 'THIS' if index == '0' else 'THAT'
+                result = [
+                    '@sp', 'AM=M-1', 'D=M',  # D=M[--sp]
+                    f'@{current}', 'M=D'
+                ]
             else:
                 raise ValueError(f'{line} is ungrammatical')
             return result

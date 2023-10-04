@@ -3,6 +3,7 @@ CUTOFF = r'//.*'
 
 TEMP = 5
 ADDR = '@R15'
+INDEX_MAX = 7
 
 PUSH_SEGMENT = [
     'local', 'arguement', 'this', 'that',
@@ -17,9 +18,15 @@ POP_SEGMENT = [
 
 SEG_CONST = ['constant']
 SEG_BASIC = ['local', 'argument', 'this', 'that']
+BASIC_ALTER = {
+    'local': '@LCL',
+    'arguement': '@ARG',
+    'this': '@THIS',
+    'that': '@THAT',
+}
 SEG_STATIC = ['static']
-SEGMENT_TEMP = ['temp']
-SEGMENT_POINTER = ['pointer']
+SEG_TEMP = ['temp']
+SEG_POINT = ['pointer']
 
 # A=sp-1
 _ARI1COMMON = ['@sp', 'A=M-1']
