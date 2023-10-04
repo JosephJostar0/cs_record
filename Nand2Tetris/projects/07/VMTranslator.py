@@ -9,7 +9,6 @@ class VMTranslator:
         self.setAll(fpath, savePath)
 
     def setAll(self, fpath: Path, savePath: Path):
-        self.fileName = fpath.stem
         self.filePath = fpath
         self.savePath = savePath
         self.cnt = 0
@@ -20,7 +19,7 @@ class VMTranslator:
         def cleanLines(content: str) -> list:
             cleanedLines = []
             for line in content.split('\n'):
-                cline = re.sub(r'//.*', '', line.strip())
+                cline = re.sub(CUTOFF, '', line.strip())
                 if len(cline) == 0:
                     continue
                 cleanedLines.append(cline)
@@ -30,7 +29,7 @@ class VMTranslator:
         if not fpath:
             raise Exception("File path is not ready to read.")
         try:
-            with fpath.open('r', encoding='utf-8') as file:
+            with fpath.open('r', encoding=ENCODE) as file:
                 self.lines = cleanLines(file.read())
         except UnicodeDecodeError:
             raise f"File '{fpath}' is not a valid text file." from None
@@ -56,7 +55,28 @@ class VMTranslator:
             if command != 'push' or segment not in PUSH_SEGMENT or not isInt(index):
                 raise ValueError(f'{line} is ungrammatical')
 
-            result = []
+            if segment in SEG_CONST:
+                result = [f'@{index}', 'D=A']
+            elif segment in SEG_BASIC:
+                result = [
+                    f'@{segment.upper()}', 'D=A',
+                    f'@{index}', 'A=A+D', 'D=M'
+                ]
+            elif segment in SEG_STATIC:
+                result = [f'@{self.filePath.stem}.{index}', 'D=M']
+            elif segment in SEGMENT_TEMP:
+                result = [
+                    f'@{TEMP}', 'D=A',
+                    f'@{index}', 'A=A+D', 'D=M',
+                ]
+            elif segment in SEGMENT_POINTER:
+                if index != '0' and index != '1':
+                    raise f'{line} is ungrammatical: i must be 0 or 1'
+                current = 'THIS' if index == '0' else 'THAT'
+                result = [f'@{current}', 'D=M']
+            else:
+                raise ValueError(f'{line} is ungrammatical')
+            result.extend(PUSH_COMMON)
             return result
 
         def transPop(line: str) -> list[str]:
@@ -65,13 +85,34 @@ class VMTranslator:
                 raise ValueError(f'{line} is ungrammatical')
 
             result = []
+            if segment in SEG_BASIC:
+                pass
+            elif segment in SEG_STATIC:
+                pass
+            elif segment in SEGMENT_TEMP:
+                pass
+            elif segment in SEGMENT_POINTER:
+                pass
+            else:
+                raise ValueError(f'{line} is ungrammatical')
             return result
 
-        def parseOthers(line: str) -> list[str]:
-            if line not in ARI_LOGI_COMMANDS:
-                raise ValueError(f'{line} is ungrammatical')
-
+        def transAriLogi(line: str) -> list[str]:
             result = []
+            if line in ARI1.keys():
+                result.extend(ARI1[line])
+            elif line in ARI2.keys():
+                result.extend(ARI2[line])
+            elif line in LOGI.keys():
+                symbol = f'_{self.cnt}'
+                self.cnt += 1
+                result.extend(LOGI_PRE)
+                result.append('@'+symbol)
+                result.extend(LOGI[line])
+                result.extend(LOGI_POST)
+                result.append(f'({symbol})')
+            else:
+                raise ValueError(f'{line} is ungrammatical')
             return result
 
         if not self.lines:
@@ -83,7 +124,7 @@ class VMTranslator:
             elif line.startswith('pop'):
                 self.result.extend(transPop(line))
             else:
-                self.result.extend(parseOthers(line))
+                self.result.extend(transAriLogi(line))
 
     def saveResult(self):
         if not self.savePath:
@@ -91,7 +132,7 @@ class VMTranslator:
         if not self.result:
             raise Exception("Result is not ready to save.")
         try:
-            with open(self.savePath, 'w', encoding='utf-8') as file:
+            with open(self.savePath, 'w', encoding=ENCODE) as file:
                 for item in self.result:
                     file.write(item+'\n')
         except FileNotFoundError:

@@ -1,75 +1,47 @@
-STACK_BASE = 256
+ENCODE = 'utf-8'
+CUTOFF = r'//.*'
+
+TEMP = 5
+ADDR = '@R15'
+
 PUSH_SEGMENT = [
     'local', 'arguement', 'this', 'that',
     'constant', 'static', 'pointer', 'temp',
 ]
+PUSH_COMMON = ['@sp', 'M=M+1', 'A=M-1', 'M=D']
+
 POP_SEGMENT = [
     'local', 'arguement', 'this', 'that',
     'static', 'pointer', 'temp',
 ]
-ARI_LOGI_COMMANDS = [
-    'add', 'sub', 'neg',
-    'eq', 'gt', 'lt',
-    'and', 'or', 'not',
-]
-SEGMENT_CONSTANT = [
-    'constant',
-]
-SEGMENT_BASIC = [
-    'local', 'argument', 'this', 'that',
-]
-SEGMENT_STATIC = [
-    'static',
-]
-SEGMENT_TEMP = [
-    'temp',
-]
 
-SET_D2STACK = [
-    '@sp',
-    'M=D'
-]
-SET_STACK2D = [
-    '@sp',
-    'D=M'
-]
+SEG_CONST = ['constant']
+SEG_BASIC = ['local', 'argument', 'this', 'that']
+SEG_STATIC = ['static']
+SEGMENT_TEMP = ['temp']
+SEGMENT_POINTER = ['pointer']
 
-SET_MADDR2D = [
-    '@addr',
-    'D=M',
-]
-SET_D2MADDR = [
-    '@addr',
-    'M=D',
-]
+# A=sp-1
+_ARI1COMMON = ['@sp', 'A=M-1']
+ARI1 = {
+    'neg': _ARI1COMMON + ['M=-M'],
+    'not': _ARI1COMMON + ['M=!M']
+}
 
-PUSH_INSTRUCTIONS = [
-    '@sp',
-    'M=M+1',
-]
-POP_INSTRUCTIONS = [
-    '@sp',
-    'M=M-1'
-]
+# D=M[--sp], A=sp-1
+_ARI2COMMON = ['@sp', 'AM=M-1', 'D=M', '@sp', 'A=M-1']
+ARI2 = {
+    'add': _ARI2COMMON + ['M=D+M'],
+    'sub': _ARI2COMMON + ['M=M-D'],
+    'and': _ARI2COMMON + ['M=D&M'],
+    'or': _ARI2COMMON + ['M=D|M'],
+}
 
-AL_DICT = {
-    'add': [
-
-    ], 'sub': [
-
-    ], 'neg': [
-
-    ], 'eq': [
-
-    ], 'gt': [
-
-    ], 'lt': [
-
-    ], 'and': [
-
-    ], 'or': [
-
-    ], 'not': [
-
-    ],
+# D=M[sp-1], sp--, D=M[sp-1]-D, M[sp-1]=1,
+LOGI_PRE = ['@sp', 'AM=M-1', 'D=M', '@sp', 'A=M-1', 'D=M-D', 'M=1']
+LOGI_POST = ['@sp', 'A=M-1', 'M=0']
+LOGI = {
+    'eq': ['D;JEQ'],
+    'gt': ['D;JGT'],
+    'lt': ['D;JLT'],
 }
