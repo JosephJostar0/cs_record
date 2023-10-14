@@ -23,7 +23,7 @@ class VMTranslator:
         def cleanLines(content: str) -> list:
             cleanedLines = []
             for line in content.split('\n'):
-                cline = re.sub(CUTOFF, '', line.strip())
+                cline = re.sub(MATCH_COMMENT, '', line.strip())
                 if len(cline) == 0:
                     continue
                 cleanedLines.append(cline.strip())
@@ -136,24 +136,39 @@ class VMTranslator:
             return result
 
         def transLabel(line: str) -> list[str]:
-            reMatch = re.match(IS_LABEL, line)
+            reMatch = re.match(MATCH_LABEL, line)
             if not reMatch:
                 raise f'{line} is ungrammatical'
             return [f'({reMatch.group(2)})']
 
         def transGoto(line: str) -> list[str]:
-            reMatch = re.match(IS_GOTO, line)
+            reMatch = re.match(MATCH_GOTO, line)
             if not reMatch:
-                raise '{line} is ungrammatical'
+                raise f'{line} is ungrammatical'
             gotoType, label = reMatch.groups()
             if gotoType == 'goto':
                 return [f'@{label}', 'D;JMP']
             else:
-                return IFGOTO_INS + [f'@{label}', 'D;JNE']
+                return IFGOTO_CODE + [f'@{label}', 'D;JNE']
 
         def isGoto(line: str) -> bool:
-            reMatch = re.match(IS_GOTO, line)
+            reMatch = re.match(MATCH_GOTO, line)
             return True if reMatch else False
+
+        def transFun(line: str) -> list[str]:
+            reMatch = re.match(MATCH_FUNC, line)
+            if not reMatch:
+                raise f'{line} is ungrammatical'
+            fname, amount = reMatch.groups()
+            result = [f'({fname})', 'D=0']
+            result += PUSH_COMMON * int(amount)
+            return result
+
+        def transCall(line: str) -> list[str]:
+            return []
+
+        def transReturn(line: str) -> list[str]:
+            return RETURN_CODE
 
         if not self.lines:
             raise Exception("Lines is not ready to translate.")
@@ -167,6 +182,12 @@ class VMTranslator:
                 self.result.extend(transLabel(line))
             elif isGoto(line):
                 self.result.extend(transGoto(line))
+            elif line.startswith('function'):
+                self.result.extend(transFun(line))
+            elif line.startswith('call'):
+                self.result.extend(transCall(line))
+            elif line == 'return':
+                self.result.extend(transReturn(line))
             else:
                 self.result.extend(transAriLogi(line))
 
