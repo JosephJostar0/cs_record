@@ -98,10 +98,7 @@ class VMTranslator:
                     ADDR, 'A=M', 'M=D',  # M[R15]=D
                 ]
             elif segment in SEG_STATIC:
-                result = [
-                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
-                    f'@{self.filePath.stem}.{index}', 'M=D'
-                ]
+                result = POP_COMMON + [f'@{self.filePath.stem}.{index}', 'M=D']
             elif segment in SEG_TEMP:
                 if not 0 <= int(index) <= INDEX_MAX:
                     raise f'{line} is ungrammatical: {index} is out of range'
@@ -115,10 +112,7 @@ class VMTranslator:
                 if index != '0' and index != '1':
                     raise f'{line} is ungrammatical: i must be 0 or 1'
                 current = 'THIS' if index == '0' else 'THAT'
-                result = [
-                    '@SP', 'AM=M-1', 'D=M',  # D=M[--sp]
-                    f'@{current}', 'M=D'
-                ]
+                result = POP_COMMON + [f'@{current}', 'M=D']
             else:
                 raise ValueError(f'{line} is ungrammatical')
             return result
@@ -130,7 +124,7 @@ class VMTranslator:
             elif line in ARI2.keys():
                 result.extend(ARI2[line])
             elif line in LOGI.keys():
-                symbol = f'_{self.cnt}'
+                symbol = f'_{line}_{self.cnt}'
                 self.cnt += 1
                 result.extend(LOGI_PRE)
                 result.append('@'+symbol)
@@ -141,6 +135,26 @@ class VMTranslator:
                 raise ValueError(f'{line} is ungrammatical')
             return result
 
+        def transLabel(line: str) -> list[str]:
+            reMatch = re.match(IS_LABEL, line)
+            if not reMatch:
+                raise f'{line} is ungrammatical'
+            return [f'({reMatch.group(2)})']
+
+        def transGoto(line: str) -> list[str]:
+            reMatch = re.match(IS_GOTO, line)
+            if not reMatch:
+                raise '{line} is ungrammatical'
+            gotoType, label = reMatch.groups()
+            if gotoType == 'goto':
+                return [f'@{label}', 'D;JMP']
+            else:
+                return IFGOTO_INS + [f'@{label}', 'D;JNE']
+
+        def isGoto(line: str) -> bool:
+            reMatch = re.match(IS_GOTO, line)
+            return True if reMatch else False
+
         if not self.lines:
             raise Exception("Lines is not ready to translate.")
         for line in self.lines:
@@ -149,6 +163,10 @@ class VMTranslator:
                 self.result.extend(transPush(line))
             elif line.startswith('pop'):
                 self.result.extend(transPop(line))
+            elif line.startswith('label'):
+                self.result.extend(transLabel(line))
+            elif isGoto(line):
+                self.result.extend(transGoto(line))
             else:
                 self.result.extend(transAriLogi(line))
 
