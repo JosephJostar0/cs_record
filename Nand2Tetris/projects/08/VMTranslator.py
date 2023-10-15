@@ -12,33 +12,55 @@ class VMTranslator:
         self.filePath = filePath
         if savePath is None:
             if not filePath.exists():
-                raise FileNotFoundError(f"File '{filePath}' does not exist.")
-            savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
+                raise f"File/Dir '{filePath}' does not exist."
+            if filePath.is_file():
+                savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
+            elif filePath.is_dir():
+                savePath = filePath / f'{filePath.name}.asm'
+            else:
+                raise f"File/Dir '{filePath}' does not exist."
         self.savePath = savePath
         self.cnt = 0
-        self.lines = None
+        self.lines = []
         self.result = []
 
     def readAndCleanLines(self):
-        def cleanLines(content: str) -> list:
+        def cleanLines(content: str) -> list[str]:
             cleanedLines = []
             for line in content.split('\n'):
                 cline = re.sub(MATCH_COMMENT, '', line.strip())
-                if len(cline) == 0:
-                    continue
-                cleanedLines.append(cline.strip())
+                if len(cline) > 0:
+                    cleanedLines.append(cline.strip())
             return cleanedLines
+
+        def romInit() -> list[str]:
+            fname, amount = 'Sys.init', 0
+            label = f'_retAddr_{self.cnt}'
+            result = INIT_CODE
+            result += [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
+            result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
+            self.cnt += 1
+            return result
 
         fpath = self.filePath
         if not fpath:
             raise Exception("File path is not ready to read.")
         try:
-            with fpath.open('r', encoding=ENCODE) as file:
-                self.lines = cleanLines(file.read())
+            if fpath.is_file():
+                current = fpath
+                with fpath.open('r', encoding=ENCODE) as file:
+                    self.lines = cleanLines(file.read())
+            elif fpath.is_dir():
+                for current in fpath.iterdir():
+                    if current.is_file() and current.suffix == SUFFIX:
+                        with current.open('r', encoding=ENCODE) as file:
+                            if current.name == 'Sys.vm':
+                                self.result = romInit()
+                            self.lines += cleanLines(file.read())
         except UnicodeDecodeError:
-            raise f"File '{fpath}' is not a valid text file." from None
+            raise f"File '{current}' is not a valid text file." from None
         except FileNotFoundError:
-            raise f"File '{fpath}' does not exist." from None
+            raise f"File '{current}' does not exist." from None
 
     def transeInstruction(self):
         def parseCommand(line: str) -> tuple[str, str, str]:
@@ -165,12 +187,20 @@ class VMTranslator:
             return result
 
         def transCall(line: str) -> list[str]:
-            return []
+            reMatch = re.match(MATCH_CALL, line)
+            if not reMatch:
+                raise f'{line} is ungrammatical'
+            fname, amount = reMatch.groups()
+            label = f'_retAddr_{self.cnt}'
+            result = [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
+            result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
+            self.cnt += 1
+            return result
 
         def transReturn(line: str) -> list[str]:
             return RETURN_CODE
 
-        if not self.lines:
+        if len(self.lines) == 0:
             raise Exception("Lines is not ready to translate.")
         for line in self.lines:
             line: str
@@ -220,10 +250,15 @@ class VMTranslator:
 
             fpath = Path(arguments[1])
             if not fpath.exists():
-                raise FileNotFoundError(f"File '{fpath}' does not exist.")
-            savePath = Path(f'{fpath.parent}/{fpath.stem}.asm')
-            if len(arguments) == 3:
-                savePath = Path(arguments[2])
+                raise FileNotFoundError(f"File/Dir '{fpath}' does not exist.")
+            if fpath.is_file():
+                savePath = Path(f'{fpath.parent}/{fpath.stem}.asm')
+                if len(arguments) == 3:
+                    savePath = Path(arguments[2])
+            elif fpath.is_dir():
+                savePath = fpath / f'{fpath.name}.asm'
+            else:
+                raise f"File/Dir '{fpath}' does not exist."
             return fpath, savePath
 
         fpath, savePath = getPath()

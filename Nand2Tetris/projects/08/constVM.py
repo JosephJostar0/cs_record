@@ -3,6 +3,8 @@ MATCH_COMMENT = r'//.*'
 MATCH_GOTO = r'(goto|if-goto) (\w+)'
 MATCH_LABEL = r'(label) (\w+)'
 MATCH_FUNC = r'function (.+) (\d+)'
+MATCH_CALL = r'call (.+) (\d+)'
+SUFFIX = '.vm'
 
 TEMP = 5
 ADDR = '@R15'
@@ -94,4 +96,39 @@ RETURN_CODE = [
     RETADDR,
     'A=M',
     'D;JMP',  # goto retAddr
+]
+
+CALL_CODE1 = [
+    'D=A',
+] + PUSH_COMMON + [
+    '@LCL',
+    'D=M',
+] + PUSH_COMMON + [
+    '@ARG',
+    'D=M',
+] + PUSH_COMMON + [
+    '@THIS',
+    'D=M',
+] + PUSH_COMMON + [
+    '@THAT',
+    'D=M',
+] + PUSH_COMMON
+
+CALL_CODE2 = [
+    'D=A',
+    '@SP',
+    'D=M-D',
+    '@ARG',
+    'M=D',  # ARG = SP - 5 - nArgs
+    '@SP',
+    'D=M',
+    '@LCL',
+    'M=D',  # LCL = SP
+]
+
+INIT_CODE = [
+    '@256',
+    'D=A',
+    '@SP',
+    'M=D',
 ]
