@@ -4,7 +4,7 @@ import re
 from constVM import *
 
 
-class VMTranslator_:
+class VMTranslatorForFile:
     def __init__(self, fpath: Path):
         self.setAll(fpath)
 
@@ -217,7 +217,7 @@ class VMTranslator_:
             else:
                 self.result.extend(transAriLogi(line))
 
-    def runVMTranslator_(self):
+    def runVMTranslatorForFile(self):
         self.readAndCleanLines()
         self.transeInstruction()
 
@@ -265,16 +265,16 @@ class VMTranslator:
             return result
 
         if self.filePath.is_file():
-            translator = VMTranslator_(self.filePath)
-            translator.runVMTranslator_()
+            translator = VMTranslatorForFile(self.filePath)
+            translator.runVMTranslatorForFile()
             self.result = translator.result
         elif self.filePath.is_dir():
             for current in self.filePath.iterdir():
                 if current.is_file() and current.suffix == SUFFIX:
                     if current.name == SYSVM:
                         self.result = romInit() + self.result
-                    translator = VMTranslator_(current)
-                    translator.runVMTranslator_()
+                    translator = VMTranslatorForFile(current)
+                    translator.runVMTranslatorForFile()
                     self.result += translator.result
         else:
             raise FileExistsError(
