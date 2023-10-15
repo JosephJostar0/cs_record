@@ -2,7 +2,7 @@
 D=A
 @SP
 M=D
-@_retAddr_0
+@_sysInit_retAddr_0
 D=A
 @SP
 M=M+1
@@ -44,7 +44,7 @@ D=M
 M=D
 @Sys.init
 0;JMP
-(_retAddr_0)
+(_sysInit_retAddr_0)
 (Class1.set)
 D=0
 @ARG
@@ -59,7 +59,7 @@ M=D
 @SP
 AM=M-1
 D=M
-@StaticsTest.0
+@Class1.0
 M=D
 @ARG
 D=M
@@ -73,7 +73,7 @@ M=D
 @SP
 AM=M-1
 D=M
-@StaticsTest.1
+@Class1.1
 M=D
 @0
 D=A
@@ -124,13 +124,13 @@ A=M
 D;JMP
 (Class1.get)
 D=0
-@StaticsTest.0
+@Class1.0
 D=M
 @SP
 M=M+1
 A=M-1
 M=D
-@StaticsTest.1
+@Class1.1
 D=M
 @SP
 M=M+1
@@ -196,7 +196,7 @@ M=D
 @SP
 AM=M-1
 D=M
-@StaticsTest.0
+@Class2.0
 M=D
 @ARG
 D=M
@@ -210,7 +210,7 @@ M=D
 @SP
 AM=M-1
 D=M
-@StaticsTest.1
+@Class2.1
 M=D
 @0
 D=A
@@ -261,13 +261,13 @@ A=M
 D;JMP
 (Class2.get)
 D=0
-@StaticsTest.0
+@Class2.0
 D=M
 @SP
 M=M+1
 A=M-1
 M=D
-@StaticsTest.1
+@Class2.1
 D=M
 @SP
 M=M+1
@@ -333,7 +333,7 @@ D=A
 M=M+1
 A=M-1
 M=D
-@_retAddr_1
+@_retAddr_0
 D=A
 @SP
 M=M+1
@@ -375,7 +375,7 @@ D=M
 M=D
 @Class1.set
 0;JMP
-(_retAddr_1)
+(_retAddr_0)
 @5
 D=A
 @0
@@ -400,7 +400,7 @@ D=A
 M=M+1
 A=M-1
 M=D
-@_retAddr_2
+@_retAddr_1
 D=A
 @SP
 M=M+1
@@ -442,7 +442,7 @@ D=M
 M=D
 @Class2.set
 0;JMP
-(_retAddr_2)
+(_retAddr_1)
 @5
 D=A
 @0
@@ -455,7 +455,7 @@ D=M
 @R15
 A=M
 M=D
-@_retAddr_3
+@_retAddr_2
 D=A
 @SP
 M=M+1
@@ -497,8 +497,8 @@ D=M
 M=D
 @Class1.get
 0;JMP
-(_retAddr_3)
-@_retAddr_4
+(_retAddr_2)
+@_retAddr_3
 D=A
 @SP
 M=M+1
@@ -540,7 +540,7 @@ D=M
 M=D
 @Class2.get
 0;JMP
-(_retAddr_4)
+(_retAddr_3)
 (WHILE)
 @WHILE
 D;JMP

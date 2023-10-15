@@ -4,7 +4,7 @@ import re
 from constVM import *
 
 
-class VMTranslator:
+class VMTranslator_:
     def __init__(self, fpath: Path, savePath: Path = None):
         self.setAll(fpath, savePath)
 
@@ -16,7 +16,7 @@ class VMTranslator:
             if filePath.is_file():
                 savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
             elif filePath.is_dir():
-                savePath = filePath / f'{filePath.name}.asm'
+                raise f"class VMTranslator_ does not accept a dir."
             else:
                 raise f"File/Dir '{filePath}' does not exist."
         self.savePath = savePath
@@ -33,34 +33,19 @@ class VMTranslator:
                     cleanedLines.append(cline.strip())
             return cleanedLines
 
-        def romInit() -> list[str]:
-            fname, amount = 'Sys.init', 0
-            label = f'_retAddr_{self.cnt}'
-            result = INIT_CODE
-            result += [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
-            result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
-            self.cnt += 1
-            return result
-
         fpath = self.filePath
         if not fpath:
             raise Exception("File path is not ready to read.")
         try:
             if fpath.is_file():
-                current = fpath
                 with fpath.open('r', encoding=ENCODE) as file:
                     self.lines = cleanLines(file.read())
             elif fpath.is_dir():
-                for current in fpath.iterdir():
-                    if current.is_file() and current.suffix == SUFFIX:
-                        with current.open('r', encoding=ENCODE) as file:
-                            if current.name == 'Sys.vm':
-                                self.result = romInit()
-                            self.lines += cleanLines(file.read())
+                raise f"class VMTranslator_ does not accept a dir."
         except UnicodeDecodeError:
-            raise f"File '{current}' is not a valid text file." from None
+            raise f"File '{fpath.name}' is not a valid text file." from None
         except FileNotFoundError:
-            raise f"File '{current}' does not exist." from None
+            raise f"File '{fpath.name}' does not exist." from None
 
     def transeInstruction(self):
         def parseCommand(line: str) -> tuple[str, str, str]:
@@ -233,10 +218,95 @@ class VMTranslator:
         except FileNotFoundError:
             raise f"File '{self.savePath}' does not exist." from None
 
-    def runVMTranslator(self):
+    def runVMTranslator_(self):
         self.readAndCleanLines()
         self.transeInstruction()
         self.saveResult()
+
+    @staticmethod
+    def getVMTranslator():
+        def getPath() -> tuple[Path, Path]:
+            arguments = sys.argv
+
+            if len(arguments) < 2:
+                raise IndexError("Please provide target file_path argument")
+            if len(arguments) > 3:
+                raise Exception("Too Many arguments")
+
+            fpath = Path(arguments[1])
+            if not fpath.exists():
+                raise FileNotFoundError(f"File/Dir '{fpath}' does not exist.")
+            if fpath.is_file():
+                savePath = Path(f'{fpath.parent}/{fpath.stem}.asm')
+                if len(arguments) == 3:
+                    savePath = Path(arguments[2])
+            elif fpath.is_dir():
+                raise f"class VMTranslator_ does not accept a dir."
+            else:
+                raise f"File/Dir '{fpath}' does not exist."
+            return fpath, savePath
+
+        fpath, savePath = getPath()
+        return VMTranslator_(fpath, savePath)
+
+
+class VMTranslator:
+    def __init__(self, fpath: Path, savePath: Path = None):
+        self.setAll(fpath, savePath)
+
+    def setAll(self, filePath: Path, savePath: Path = None):
+        self.filePath = filePath
+        if savePath is None:
+            if not filePath.exists():
+                raise f"File/Dir '{filePath}' does not exist."
+            if filePath.is_file():
+                savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
+            elif filePath.is_dir():
+                savePath = filePath / f'{filePath.name}.asm'
+            else:
+                raise f"File/Dir '{filePath}' does not exist."
+        self.savePath = savePath
+        self.cnt = 0
+        self.lines = []
+        self.result = []
+
+    def saveResult(self):
+        if not self.savePath:
+            raise Exception("Save path is not ready to save.")
+        if not self.result:
+            raise Exception("Result is not ready to save.")
+        try:
+            with open(self.savePath, 'w', encoding=ENCODE) as file:
+                for item in self.result:
+                    file.write(item+'\n')
+        except FileNotFoundError:
+            raise f"File '{self.savePath}' does not exist." from None
+
+    def runVMTranslator(self):
+        def romInit() -> list[str]:
+            fname, amount = 'Sys.init', 0
+            label = f'_sysInit_retAddr_{self.cnt}'
+            result = INIT_CODE
+            result += [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
+            result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
+            self.cnt += 1
+            return result
+
+        if self.filePath.is_file():
+            translator = VMTranslator_(self.filePath, self.savePath)
+            translator.runVMTranslator_()
+        elif self.filePath.is_dir():
+            for current in self.filePath.iterdir():
+                if current.is_file() and current.suffix == SUFFIX:
+                    if current.name == 'Sys.vm':
+                        self.result = romInit() + self.result
+                    translator = VMTranslator_(current)
+                    translator.readAndCleanLines()
+                    translator.transeInstruction()
+                    self.result += translator.result
+            self.saveResult()
+        else:
+            raise f"File/Dir '{self.filePath}' isn't a file or dir."
 
     @staticmethod
     def getVMTranslator():
