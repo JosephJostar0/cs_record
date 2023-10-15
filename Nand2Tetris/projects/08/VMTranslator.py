@@ -266,8 +266,6 @@ class VMTranslator:
             else:
                 raise f"File/Dir '{filePath}' does not exist."
         self.savePath = savePath
-        self.cnt = 0
-        self.lines = []
         self.result = []
 
     def saveResult(self):
@@ -285,11 +283,10 @@ class VMTranslator:
     def runVMTranslator(self):
         def romInit() -> list[str]:
             fname, amount = 'Sys.init', 0
-            label = f'_sysInit_retAddr_{self.cnt}'
+            label = f'_sysInit_retAddr'
             result = INIT_CODE
             result += [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
             result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
-            self.cnt += 1
             return result
 
         if self.filePath.is_file():
