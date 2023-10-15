@@ -5,6 +5,7 @@ MATCH_LABEL = r'(label) (\w+)'
 MATCH_FUNC = r'function (.+) (\d+)'
 MATCH_CALL = r'call (.+) (\d+)'
 SUFFIX = '.vm'
+SYSVM = 'Sys.vm'
 
 TEMP = 5
 ADDR = '@R15'

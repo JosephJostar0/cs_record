@@ -5,22 +5,13 @@ from constVM import *
 
 
 class VMTranslator_:
-    def __init__(self, fpath: Path, savePath: Path = None):
-        self.setAll(fpath, savePath)
+    def __init__(self, fpath: Path):
+        self.setAll(fpath)
 
-    def setAll(self, filePath: Path, savePath: Path = None):
+    def setAll(self, filePath: Path):
         self.filePath = filePath
-        if savePath is None:
-            if not filePath.exists():
-                raise f"File/Dir '{filePath}' does not exist."
-            if filePath.is_file():
-                savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
-            elif filePath.is_dir():
-                raise f"class VMTranslator_ does not accept a dir."
-            else:
-                raise f"File/Dir '{filePath}' does not exist."
-        self.savePath = savePath
         self.cnt = 0
+        self.funcStack = []
         self.lines = []
         self.result = []
 
@@ -41,11 +32,13 @@ class VMTranslator_:
                 with fpath.open('r', encoding=ENCODE) as file:
                     self.lines = cleanLines(file.read())
             elif fpath.is_dir():
-                raise f"class VMTranslator_ does not accept a dir."
+                raise TypeError(f"class VMTranslator_ does not accept a dir.")
         except UnicodeDecodeError:
-            raise f"File '{fpath.name}' is not a valid text file." from None
+            raise UnicodeDecodeError(
+                f"File '{fpath.name}' is not a valid text file.") from None
         except FileNotFoundError:
-            raise f"File '{fpath.name}' does not exist." from None
+            raise FileNotFoundError(
+                f"File '{fpath.name}' does not exist.") from None
 
     def transeInstruction(self):
         def parseCommand(line: str) -> tuple[str, str, str]:
@@ -77,14 +70,16 @@ class VMTranslator_:
                 result = [f'@{self.filePath.stem}.{index}', 'D=M']
             elif segment in SEG_TEMP:
                 if not 0 <= int(index) <= INDEX_MAX:
-                    raise f'{line} is ungrammatical: {index} is out of range'
+                    raise ValueError(
+                        f'{line} is ungrammatical: {index} is out of range')
                 result = [
                     f'@{TEMP}', 'D=A',
                     f'@{index}', 'A=D+A', 'D=M',
                 ]
             elif segment in SEG_POINT:
                 if index != '0' and index != '1':
-                    raise f'{line} is ungrammatical: i must be 0 or 1'
+                    raise ValueError(
+                        f'{line} is ungrammatical: i must be 0 or 1')
                 current = 'THIS' if index == '0' else 'THAT'
                 result = [f'@{current}', 'D=M']
             else:
@@ -108,7 +103,8 @@ class VMTranslator_:
                 result = POP_COMMON + [f'@{self.filePath.stem}.{index}', 'M=D']
             elif segment in SEG_TEMP:
                 if not 0 <= int(index) <= INDEX_MAX:
-                    raise f'{line} is ungrammatical: {index} is out of range'
+                    raise ValueError(
+                        f'{line} is ungrammatical: {index} is out of range')
                 result = [
                     f'@{TEMP}', 'D=A', f'@{index}', 'D=D+A',  # D=addr
                     ADDR, 'M=D',  # R15=addr
@@ -117,7 +113,8 @@ class VMTranslator_:
                 ]
             elif segment in SEG_POINT:
                 if index != '0' and index != '1':
-                    raise f'{line} is ungrammatical: i must be 0 or 1'
+                    raise ValueError(
+                        f'{line} is ungrammatical: i must be 0 or 1')
                 current = 'THIS' if index == '0' else 'THAT'
                 result = POP_COMMON + [f'@{current}', 'M=D']
             else:
@@ -131,7 +128,7 @@ class VMTranslator_:
             elif line in ARI2.keys():
                 result.extend(ARI2[line])
             elif line in LOGI.keys():
-                symbol = f'_{line}_{self.cnt}'
+                symbol = f'{self.filePath.stem}${line}.{self.cnt}'
                 self.cnt += 1
                 result.extend(LOGI_PRE)
                 result.append('@'+symbol)
@@ -145,14 +142,23 @@ class VMTranslator_:
         def transLabel(line: str) -> list[str]:
             reMatch = re.match(MATCH_LABEL, line)
             if not reMatch:
-                raise f'{line} is ungrammatical'
-            return [f'({reMatch.group(2)})']
+                raise ValueError(f'{line} is ungrammatical')
+            bar = reMatch.group(2)
+            if len(self.funcStack) == 0:
+                return [f'({bar})']
+            func = self.funcStack[-1]
+            label = f'{func}${bar}'
+            return [f'({label})']
 
         def transGoto(line: str) -> list[str]:
             reMatch = re.match(MATCH_GOTO, line)
             if not reMatch:
-                raise f'{line} is ungrammatical'
-            gotoType, label = reMatch.groups()
+                raise ValueError(f'{line} is ungrammatical')
+            gotoType, bar = reMatch.groups()
+            label = bar
+            if len(self.funcStack) > 0:
+                func = self.funcStack[-1]
+                label = f'{func}${bar}'
             if gotoType == 'goto':
                 return [f'@{label}', 'D;JMP']
             else:
@@ -165,24 +171,29 @@ class VMTranslator_:
         def transFun(line: str) -> list[str]:
             reMatch = re.match(MATCH_FUNC, line)
             if not reMatch:
-                raise f'{line} is ungrammatical'
-            fname, amount = reMatch.groups()
-            result = [f'({fname})', 'D=0']
+                raise ValueError(f'{line} is ungrammatical')
+            funcName, amount = reMatch.groups()
+            result = [f'({funcName})', 'D=0']
             result += PUSH_COMMON * int(amount)
+            self.funcStack.append(funcName)
             return result
 
         def transCall(line: str) -> list[str]:
             reMatch = re.match(MATCH_CALL, line)
             if not reMatch:
-                raise f'{line} is ungrammatical'
-            fname, amount = reMatch.groups()
-            label = f'_retAddr_{self.cnt}'
+                raise ValueError(f'{line} is ungrammatical')
+            funcName, amount = reMatch.groups()
+            if len(self.funcStack) == 0:
+                raise ValueError(f"func out of range at line: '{line}'")
+            label = f'{self.funcStack[-1]}$ret.{self.cnt}'
             result = [f'@{label}'] + CALL_CODE1 + [f'@{int(amount) + 5}']
-            result += CALL_CODE2 + [f'@{fname}', '0;JMP', f'({label})']
+            result += CALL_CODE2 + [f'@{funcName}', '0;JMP', f'({label})']
             self.cnt += 1
             return result
 
         def transReturn(line: str) -> list[str]:
+            if len(self.funcStack) == 0:
+                raise ValueError(f"func out of range at line: '{line}'")
             return RETURN_CODE
 
         if len(self.lines) == 0:
@@ -206,48 +217,9 @@ class VMTranslator_:
             else:
                 self.result.extend(transAriLogi(line))
 
-    def saveResult(self):
-        if not self.savePath:
-            raise Exception("Save path is not ready to save.")
-        if not self.result:
-            raise Exception("Result is not ready to save.")
-        try:
-            with open(self.savePath, 'w', encoding=ENCODE) as file:
-                for item in self.result:
-                    file.write(item+'\n')
-        except FileNotFoundError:
-            raise f"File '{self.savePath}' does not exist." from None
-
     def runVMTranslator_(self):
         self.readAndCleanLines()
         self.transeInstruction()
-        self.saveResult()
-
-    @staticmethod
-    def getVMTranslator():
-        def getPath() -> tuple[Path, Path]:
-            arguments = sys.argv
-
-            if len(arguments) < 2:
-                raise IndexError("Please provide target file_path argument")
-            if len(arguments) > 3:
-                raise Exception("Too Many arguments")
-
-            fpath = Path(arguments[1])
-            if not fpath.exists():
-                raise FileNotFoundError(f"File/Dir '{fpath}' does not exist.")
-            if fpath.is_file():
-                savePath = Path(f'{fpath.parent}/{fpath.stem}.asm')
-                if len(arguments) == 3:
-                    savePath = Path(arguments[2])
-            elif fpath.is_dir():
-                raise f"class VMTranslator_ does not accept a dir."
-            else:
-                raise f"File/Dir '{fpath}' does not exist."
-            return fpath, savePath
-
-        fpath, savePath = getPath()
-        return VMTranslator_(fpath, savePath)
 
 
 class VMTranslator:
@@ -258,13 +230,15 @@ class VMTranslator:
         self.filePath = filePath
         if savePath is None:
             if not filePath.exists():
-                raise f"File/Dir '{filePath}' does not exist."
+                raise FileNotFoundError(
+                    f"File/Dir '{filePath}' does not exist.")
             if filePath.is_file():
                 savePath = Path(f'{filePath.parent}/{filePath.stem}.asm')
             elif filePath.is_dir():
                 savePath = filePath / f'{filePath.name}.asm'
             else:
-                raise f"File/Dir '{filePath}' does not exist."
+                raise FileNotFoundError(
+                    f"File/Dir '{filePath}' does not exist.")
         self.savePath = savePath
         self.result = []
 
@@ -278,7 +252,8 @@ class VMTranslator:
                 for item in self.result:
                     file.write(item+'\n')
         except FileNotFoundError:
-            raise f"File '{self.savePath}' does not exist." from None
+            raise FileNotFoundError(
+                f"File '{self.savePath}' does not exist.") from None
 
     def runVMTranslator(self):
         def romInit() -> list[str]:
@@ -290,20 +265,21 @@ class VMTranslator:
             return result
 
         if self.filePath.is_file():
-            translator = VMTranslator_(self.filePath, self.savePath)
+            translator = VMTranslator_(self.filePath)
             translator.runVMTranslator_()
+            self.result = translator.result
         elif self.filePath.is_dir():
             for current in self.filePath.iterdir():
                 if current.is_file() and current.suffix == SUFFIX:
-                    if current.name == 'Sys.vm':
+                    if current.name == SYSVM:
                         self.result = romInit() + self.result
                     translator = VMTranslator_(current)
-                    translator.readAndCleanLines()
-                    translator.transeInstruction()
+                    translator.runVMTranslator_()
                     self.result += translator.result
-            self.saveResult()
         else:
-            raise f"File/Dir '{self.filePath}' isn't a file or dir."
+            raise FileExistsError(
+                f"File/Dir '{self.filePath}' isn't a file or dir.")
+        self.saveResult()
 
     @staticmethod
     def getVMTranslator():
@@ -325,7 +301,7 @@ class VMTranslator:
             elif fpath.is_dir():
                 savePath = fpath / f'{fpath.name}.asm'
             else:
-                raise f"File/Dir '{fpath}' does not exist."
+                raise FileExistsError(f"File/Dir '{fpath}' does not exist.")
             return fpath, savePath
 
         fpath, savePath = getPath()

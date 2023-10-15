@@ -2,7 +2,7 @@
 D=A
 @SP
 M=D
-@_sysInit_retAddr_0
+@_sysInit_retAddr
 D=A
 @SP
 M=M+1
@@ -44,7 +44,7 @@ D=M
 M=D
 @Sys.init
 0;JMP
-(_sysInit_retAddr_0)
+(_sysInit_retAddr)
 (Class1.set)
 D=0
 @ARG
@@ -333,7 +333,7 @@ D=A
 M=M+1
 A=M-1
 M=D
-@_retAddr_0
+@Sys.init$ret.0
 D=A
 @SP
 M=M+1
@@ -375,7 +375,7 @@ D=M
 M=D
 @Class1.set
 0;JMP
-(_retAddr_0)
+(Sys.init$ret.0)
 @5
 D=A
 @0
@@ -400,7 +400,7 @@ D=A
 M=M+1
 A=M-1
 M=D
-@_retAddr_1
+@Sys.init$ret.1
 D=A
 @SP
 M=M+1
@@ -442,7 +442,7 @@ D=M
 M=D
 @Class2.set
 0;JMP
-(_retAddr_1)
+(Sys.init$ret.1)
 @5
 D=A
 @0
@@ -455,7 +455,7 @@ D=M
 @R15
 A=M
 M=D
-@_retAddr_2
+@Sys.init$ret.2
 D=A
 @SP
 M=M+1
@@ -497,8 +497,8 @@ D=M
 M=D
 @Class1.get
 0;JMP
-(_retAddr_2)
-@_retAddr_3
+(Sys.init$ret.2)
+@Sys.init$ret.3
 D=A
 @SP
 M=M+1
@@ -540,7 +540,7 @@ D=M
 M=D
 @Class2.get
 0;JMP
-(_retAddr_3)
-(WHILE)
-@WHILE
+(Sys.init$ret.3)
+(Sys.init$WHILE)
+@Sys.init$WHILE
 D;JMP
