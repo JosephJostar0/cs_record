@@ -1,0 +1,68 @@
+class CircleGame {
+   field Circle circle; // the circle of this game
+   field int direction; // the circle's current direction: 
+                        // 0=none, 1=up, 2=down, 3=left, 4=right
+
+   /** Constructs a new Circle Game. */
+   constructor CircleGame new() {
+      // Creates a 30 by 30 pixels circle and positions it at the center of the screen.
+      let circle = Circle.new(15, 15, 15);
+      let direction = 0;  // initial state is no movement
+      return this;
+   }
+
+   /** Disposes this game. */
+   method void dispose() {
+      do circle.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Moves the circle in the current direction. */
+   method void moveCircle() {
+      if (direction = 1) { do circle.moveUp(); }
+      if (direction = 2) { do circle.moveDown(); }
+      if (direction = 3) { do circle.moveLeft(); }
+      if (direction = 4) { do circle.moveRight(); }
+      do Sys.wait(5);  // delays the next movement
+      return;
+   }
+
+   /** Runs the game: handles the user's inputs and moves the circle accordingly */
+   method void run() {
+      var char key;  // the key currently pressed by the user
+      var boolean exit;
+      let exit = false;
+      
+      while (~exit) {
+         // waits for a key to be pressed
+         while (key = 0) {
+            let direction = 0;
+            let key = Keyboard.keyPressed();
+            do moveCircle();
+         }
+         if (key = 81)  { let exit = true; }     // q key
+         if (key = 90)  { do circle.decSize(); } // z key
+         if (key = 88)  { do circle.incSize(); } // x key
+         if (key = 131) { let direction = 1; }   // up arrow
+         if (key = 133) { let direction = 2; }   // down arrow
+         if (key = 130) { let direction = 3; }   // left arrow
+         if (key = 132) { let direction = 4; }   // right arrow
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            do moveCircle();
+            if (key = 90) {
+               do circle.decSize();
+               do Sys.wait(45);
+            } // z key
+            if (key = 88) {
+               do circle.incSize();
+               do Sys.wait(45);
+            } // x key
+         }
+     } // while
+     return;
+   }
+}

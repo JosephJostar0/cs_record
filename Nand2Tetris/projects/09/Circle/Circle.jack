@@ -1,0 +1,103 @@
+class Circle {
+
+   field int x, y; // screen location of the circle's top-left corner
+   field int radius; // length of this circle, in pixels
+
+   /** Constructs a new circle with a given location and radius. */
+   constructor Circle new(int Ax, int Ay, int Aradius) {
+      let x = Ax;
+      let y = Ay;
+      let radius = Aradius;
+      do draw();
+      return this;
+   }
+
+   /** Disposes this circle. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the circle on the screen. */
+   method void draw() {
+      do Screen.setColor(true);
+      do Screen.drawCircle(x, y, radius);
+      return;
+   }
+
+   /** Erases the circle from the screen. */
+   method void erase() {
+      do Screen.setColor(false);
+      do Screen.drawCircle(x, y, radius);
+      return;
+   }
+
+    /** Increments the circle radius by 2 pixels. */
+   method void incSize() {
+      if (((y + radius) < 254) & ((x + radius) < 510)) {
+         do erase();
+         let radius = radius + 2;
+         do draw();
+      }
+      return;
+   }
+
+   /** Decrements the circle radius by 2 pixels. */
+   method void decSize() {
+      if (radius > 2) {
+         do erase();
+         let radius = radius - 2;
+         do draw();
+      }
+      return;
+   }
+
+   /** Moves the circle up by 2 pixels. */
+   method void moveUp() {
+      if ((y - radius) > 1) {
+         do Screen.setColor(false);
+         do Screen.drawRectangle(x - radius, y - 2, x + radius, y + radius);
+         let y = y - 2;
+         do Screen.setColor(true);
+         do Screen.drawCircle(x, y, radius);
+      }
+      return;
+   }
+
+   /** Moves the circle down by 2 pixels. */
+   method void moveDown() {
+      if ((y + radius) < 254) {
+         do Screen.setColor(false);
+         do Screen.drawRectangle(x - radius, y - radius, x + radius, y + 2);
+         let y = y + 2;
+         do Screen.setColor(true);
+         do Screen.drawCircle(x, y, radius);
+      }
+      return;
+   }
+
+   /** Moves the circle left by 2 pixels. */
+   method void moveLeft() {
+      if ((x - radius) > 1) {
+         do Screen.setColor(false);
+         do Screen.drawRectangle(x - 2, y - radius, x + radius, y + radius);
+         let x = x - 2;
+         do Screen.setColor(true);
+         do Screen.drawCircle(x, y, radius);
+      }
+      return;
+   }
+
+   /** Moves the circle right by 2 pixels. */
+   method void moveRight() {
+      if ((x + radius) < 510) {
+         do Screen.setColor(false);
+         do Screen.drawCircle(x, y, radius);
+         do Screen.drawRectangle(x - radius, y - radius, x + 2, y + radius);
+         let x = x + 2;
+         do Screen.setColor(true);
+         do Screen.drawCircle(x, y, radius);
+      }
+      return;
+   }
+}
