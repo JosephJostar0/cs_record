@@ -117,26 +117,32 @@ class JackTokenizer:
         pass
 
     def readAndGetToken(self):
-        def getToken(content: str) -> list:
-            fragments = re.split(MATCH_TOKEN, content)
-            fragments = [it for it in fragments if it != '']
+        def getToken(line: str) -> list:
+            def handleNoStr(content: str):
+                result = []
+                fragments = re.split(MATCH_TOKEN, content)
+                fragments = [it for it in fragments if it != '']
+                for item in fragments:
+                    item = item.strip()
+                    if item.startswith('"') and item.endswith('"'):
+                        result.append(item)
+                    else:
+                        for it in item.split(' '):
+                            it = it.strip()
+                            if len(it) > 0:
+                                result.append(it)
+                return result
+
             result = []
-            for item in fragments:
-                item = item.strip()
-                if item.startswith('"') and item.endswith('"'):
-                    result.append(item)
-                else:
-                    for it in item.split(' '):
-                        it = it.strip()
-                        if len(it) > 0:
-                            result.append(it)
-
-            # 打开文件以追加写入，如果文件不存在则创建它
-            with open('my_file.txt', 'a') as file:
-                for it in result:
-                    file.write(it+'| ')
-                file.write('\n\n------------------------\n\n')
-
+            strCut = re.match(MATCH_TOKEN_STR, line)
+            if strCut is not None:
+                preStr, string, postStr = strCut.groups()
+                result += handleNoStr(preStr)
+                if len(string) > 0:
+                    result.append(string)
+                result += handleNoStr(postStr)
+            else:
+                return handleNoStr(line)
             return result
 
         def cleanLines(content: str):

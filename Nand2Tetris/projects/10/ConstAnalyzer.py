@@ -4,6 +4,7 @@ MATCH_COMMENT1 = r'/\*.*?\*/'
 MATCH_STRING = r'^".*"$'
 MATCH_IDENTIFYER = r"^(?!^\d)\w+$"
 MATCH_TOKEN = r'([{},\[\].,;+\-*/&|<>=~\(\)])'
+MATCH_TOKEN_STR = r'(.*)(".*")(.*)'
 INT_MIN = 0
 INT_MAX = 32767
 
