@@ -115,6 +115,22 @@ class CompilationEngine:
 
 
 class JackAnalyzer:
+    def __init__(self, inPath: Path, outPath: Path = None):
+        self.setAll(inPath, outPath)
+
+    def setAll(self, inPath: Path, outPath: Path = None):
+        if inPath is None or not inPath.exists():
+            raise FileExistsError(f'{inPath} is not a valid file/dir')
+        self.inPath = inPath
+        if outPath is None:
+            if inPath.is_file():
+                outPath = Path(f'{inPath.parent}/{inPath.stem}.xml')
+            elif inPath.is_dir():
+                outPath = inPath / f'{inPath.name}.xml'
+            else:
+                raise FileNotFoundError(f"File/Dir '{inPath}' does not exist.")
+        self.outPath = outPath
+
     @staticmethod
     def getJackAnalyzer():
         def getPaths() -> tuple[Path, Path]:
@@ -137,6 +153,9 @@ class JackAnalyzer:
             else:
                 raise FileExistsError(f"File/Dir '{inPath}' does not exist.")
             return inPath, outPath
+
+        inPath, outPath = getPaths()
+        return JackAnalyzer(inPath, outPath)
 
 
 if __name__ == '__main__':
