@@ -211,11 +211,24 @@ class CompilationEngine:
         '''
         Compiles a (possibly empty) comma-separated list of expressions.
         '''
+        self.results.put(WriteElement('<expressionList>', level))
+        self.results.put(WriteElement('</expressionList>', level))
 
     def compileReturn(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a return statement.
         '''
+        returnKWD = self.tokenList[head]
+        semicolon = self.tokenList[tail - 1]
+        if not isSemicolon(semicolon):
+            raise ValueError(f'{semicolon} must be ";".')
+
+        self.results.put(WriteElement('<returnStatement>', level))
+        self.results.put(WriteElement(returnKWD, level + 1))
+        if tail - head != 2:
+            self.compileExpression(head + 1, tail - 1, level + 1)
+        self.results.put(WriteElement(semicolon, level + 1))
+        self.results.put(WriteElement('</returnStatement>', level))
 
     def compileDo(self, head: int, tail: int, level: int = 0):
         '''
@@ -223,7 +236,16 @@ class CompilationEngine:
         '''
         def handleSubroutineCall(head: int, tail: int):
             def handleCallList(head, tail) -> int:
-                pass
+                matchCnt = 1
+                for i in range(head, tail):
+                    current = self.tokenList[i]
+                    if isOpenParenthesis(current):
+                        matchCnt += 1
+                    elif isCloseParenthesis(current):
+                        matchCnt -= 1
+                        if matchCnt == 0:
+                            return i
+                raise ValueError('invalid callList.')
 
             name = self.tokenList[head]
             whether = self.tokenList[head + 1]
@@ -240,14 +262,14 @@ class CompilationEngine:
                 self.results.put(WriteElement(whether, level + 1))
                 self.results.put(WriteElement(subName, level + 1))
                 self.results.put(WriteElement(openParen, level + 1))
-                self.compileExpressionList(head + 4, nexId)
+                self.compileExpressionList(head + 4, nexId, level + 1)
                 self.results.put(WriteElement(closeParen, level + 1))
                 return
             nextId = handleCallList(head + 2, tail)
             closeParen = self.tokenList[nextId]
             self.results.put(WriteElement(name, level + 1))
             self.results.put(WriteElement(whether, level + 1))
-            self.compileExpressionList(head + 2, nextId)
+            self.compileExpressionList(head + 2, nextId, level + 1)
             self.results.put(WriteElement(closeParen, level + 1))
 
         doKWD = self.tokenList[head]
