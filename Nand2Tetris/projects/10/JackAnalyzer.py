@@ -3,7 +3,6 @@ from pathlib import Path
 import re
 from queue import Queue
 import threading
-from time import sleep
 
 from ConstAnalyzer import *
 
