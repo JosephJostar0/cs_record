@@ -192,36 +192,6 @@ class CompilationEngine:
             with open(self.outPath, 'a') as file:
                 file.write(str(element) + '\n')
 
-    def compileLet(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles a let statement.
-        '''
-
-    def compileIf(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles an if statement, possibly with a trailing else clause.
-        '''
-
-    def compileWhile(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles a while statement.
-        '''
-
-    def compileDo(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles a do statement.
-        '''
-
-    def compileReturn(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles a return statement.
-        '''
-
-    def compileExpression(self, head: int, tail: int, level: int = 0):
-        '''
-        Compiles an expression.
-        '''
-
     def compileTerm(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a term.
@@ -230,16 +200,194 @@ class CompilationEngine:
         Any other token is not part of this term and should not be advanced over.
         '''
 
+    def compileExpression(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles an expression.
+        '''
+        self.results.put(WriteElement('<expression>', level))
+        self.results.put(WriteElement('</expression>', level))
+
     def compileExpressionList(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a (possibly empty) comma-separated list of expressions.
         '''
 
-    def compilesStatements(self, head: int, tail: int, level: int = 0):  # TODO
+    def compileReturn(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles a return statement.
+        '''
+
+    def compileDo(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles a do statement.
+        '''
+
+    def compileWhile(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles a while statement.
+        '''
+
+    def compileIf(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles an if statement, possibly with a trailing else clause.
+        '''
+        def handleIfExpression(head: int, tail: int) -> int:
+            offset = 0
+            matchCnt = 1
+            while head + offset < tail:
+                current = self.tokenList[head + offset]
+                if isOpenParenthesis(current):
+                    matchCnt += 1
+                elif isCloseParenthesis(current):
+                    matchCnt -= 1
+                    if matchCnt == 0:
+                        break
+                offset += 1
+            if head + offset == tail:
+                raise ValueError('invalid ifExpression.')
+            return head + offset
+
+        def handleIfStatements(head: int, tail: int) -> int:
+            offset = 0
+            matchCnt = 1
+            while head + offset < tail:
+                current = self.tokenList[head + offset]
+                if isOpenBrace(current):
+                    matchCnt += 1
+                if isCloseBrace(current):
+                    matchCnt -= 1
+                    if matchCnt == 0:
+                        return head + offset
+                offset += 1
+            # raise ValueError('invalid ifStatements.')
+
+        def handleElse(head: int, tail: int):
+            elseKWD = self.tokenList[head]
+            openBrace = self.tokenList[head + 1]
+            closeBrace = self.tokenList[tail - 1]
+            if not isElse(elseKWD):
+                raise ValueError(f'{elseKWD} should be "else".')
+            if not isOpenBrace(openBrace):
+                raise ValueError(f'{openBrace} should be "(".')
+            if not isCloseBrace(closeBrace):
+                raise ValueError(f'{closeBrace} should be ")".')
+
+            self.results.put(WriteElement(elseKWD, level + 1))
+            self.results.put(WriteElement(openBrace, level + 1))
+            self.compileStatements(head + 2, tail - 1, level + 1)
+            self.results.put(WriteElement(closeBrace, level + 1))
+
+        ifKWD = self.tokenList[head]
+        openParen = self.tokenList[head + 1]
+        nextId0 = handleIfExpression(head + 2, tail)
+        closeParen = self.tokenList[nextId0]
+        openBrace = self.tokenList[nextId0 + 1]
+        nextId1 = handleIfStatements(nextId0 + 2, tail)
+        closeBrace = self.tokenList[nextId1]
+        if not isOpenParenthesis(openParen):
+            raise ValueError(f'{openParen} should be ' + '"{".')
+        if not isCloseParenthesis(closeParen):
+            raise ValueError(f'{openParen} should be ' + '"}".')
+        if not isOpenBrace(openBrace):
+            raise ValueError(f'{openBrace} should be "(".')
+        if not isCloseBrace(closeBrace):
+            raise ValueError(f'{closeBrace} should be ")".')
+
+        self.results.put(WriteElement('<ifStatement>', level))
+        self.results.put(WriteElement(ifKWD, level + 1))
+        self.results.put(WriteElement(openParen, level + 1))
+        self.compileExpression(head + 2, nextId0, level + 1)
+        self.results.put(WriteElement(closeParen, level + 1))
+        self.results.put(WriteElement(openBrace, level + 1))
+        self.compileStatements(nextId0 + 2, nextId1, level + 1)
+        self.results.put(WriteElement(closeBrace, level + 1))
+        if nextId1 < tail - 1:
+            handleElse(nextId1 + 1, tail)
+        self.results.put(WriteElement('</ifStatement>', level))
+
+    def compileLet(self, head: int, tail: int, level: int = 0):
+        '''
+        Compiles a let statement.
+        '''
+        def handleLetExpression(head: int, tail: int) -> int:
+            openSquare = self.tokenList[head]
+            if not isOpenSquare(openSquare):
+                return head
+            offset = 1
+            while head + offset < tail:
+                current = self.tokenList[head + offset]
+                if isCloseBrace(current):
+                    break
+                offset += 1
+            if head + offset == tail:
+                raise ValueError('invalid letExpression.')
+            self.results.put(WriteElement(openSquare, level + 1))
+            self.compileExpression(head + 1, head + offset, level + 1)
+            self.results.put(WriteElement(current, level + 1))
+            return head + offset + 1
+
+        letKWD = self.tokenList[head]
+        varName = self.tokenList[head + 1]
+        semicolon = self.tokenList[tail - 1]
+        if not varName.tType == IDENTIFIER:
+            raise ValueError(f'{varName} should be an {IDENTIFIER}.')
+        if not isSemicolon(semicolon):
+            raise ValueError(f'{semicolon} should be a ";".')
+
+        self.results.put(WriteElement('<letStatement>', level))
+        self.results.put(WriteElement(letKWD, level + 1))
+        self.results.put(WriteElement(varName, level + 1))
+        nextId = handleLetExpression(head + 2, tail)
+        equal = self.tokenList[nextId]
+        if not isEqual(equal):
+            raise ValueError(f'{equal} should be a "=".')
+        self.results.put(WriteElement(equal, level + 1))
+        self.compileExpression(nextId + 1, tail - 1, level + 1)
+        self.results.put(WriteElement(semicolon, level + 1))
+        self.results.put(WriteElement('</letStatement>', level))
+
+    def compileStatements(self, head: int, tail: int, level: int = 0):  # TODO
         '''
         Compiles a sequence of statements.
         Does not handle the enclosing "{}".
         '''
+        def handleStatement(content: str, head: int, tail: int):
+            if content == 'let':
+                self.compileLet(head, tail, level + 1)
+            elif content == 'if':
+                self.compileIf(head, tail, level + 1)
+            elif content == 'while':
+                self.compileWhile(head, tail, level + 1)
+            elif content == 'do':
+                self.compileDo(head, tail, level + 1)
+            elif content == 'return':
+                self.compileReturn(head, tail, level + 1)
+            else:
+                raise ValueError(f'{content} should be a statementKey')
+
+        self.results.put(WriteElement('<statements>', level))
+
+        offset = 0
+        while head + offset < tail:
+            current = self.tokenList[head + offset]
+            if not isStatementKey(current):
+                raise ValueError(f'{current} should be a statementKey')
+            length = 1
+            matchCnt = 0  # matching parentheses
+            while head + offset + length < tail:
+                temp = self.tokenList[head + offset + length]
+                if isOpenBrace(temp) or isOpenParenthesis(temp) or isOpenSquare(temp):
+                    matchCnt += 1
+                if isCloseBrace(temp) or isCloseParenthesis(temp) or isCloseSquare(temp):
+                    matchCnt -= 1
+                if isStatementKey(temp) and matchCnt == 0:
+                    break
+                length += 1
+            handleStatement(
+                current.content, head + offset, head + offset + length
+            )
+            offset += length
+        self.results.put(WriteElement('</statements>', level))
 
     def compileVarDec(self, head: int, tail: int, level: int = 0):
         '''
@@ -272,7 +420,7 @@ class CompilationEngine:
             self.results.put(WriteElement(varSemicolon, level + 1))
         self.results.put(WriteElement('</varDec>', level))
 
-    def compileSubroutineBody(self, head: int, tail: int, level):
+    def compileSubroutineBody(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a subroutine's body.
         '''
@@ -306,7 +454,7 @@ class CompilationEngine:
         self.results.put(WriteElement('<subroutineBody>', level))
         self.results.put(WriteElement(openBrace, level + 1))
         nextId = followedVarDec(head + 1, tail - 1)
-        self.compilesStatements(nextId, tail - 1, level + 1)
+        self.compileStatements(nextId, tail - 1, level + 1)
         self.results.put(WriteElement(closeBrace, level + 1))
         self.results.put(WriteElement('</subroutineBody>', level))
 
@@ -447,20 +595,18 @@ class CompilationEngine:
             offset = 0
             while head + offset < tail:
                 current = self.tokenList[head + offset]
-                if current.content not in ['constructor', 'function', 'method'] or current.tType != KEYWORD:
-                    break
-                index = 0
+                if not isSubDecKWD(current):
+                    raise ValueError(f'{current} should be an SubDecKWD.')
+                index = 1
                 while head + offset + index < tail:
-                    token = self.tokenList[head + offset + index]
-                    if isCloseBrace(token):
-                        self.compileSubroutineDec(
-                            head + offset, head + offset + index + 1, level + 1
-                        )
-                        offset += index + 1
+                    temp = self.tokenList[head + offset + index]
+                    if isSubDecKWD(temp):
                         break
                     index += 1
-                if head + offset + index == tail:
-                    raise Exception(f'missed ";"')
+                self.compileSubroutineDec(
+                    head + offset, head + offset + index, level + 1
+                )
+                offset += index
             return head + offset
 
         classKWD = self.tokenList[head]
@@ -488,10 +634,11 @@ class CompilationEngine:
     def runCompilationEngine(self):
         writer = threading.Thread(target=self.writeResult)
         writer.start()
-        try:
-            self.compileClass(0, self.total)
-        except Exception as e:
-            print(e)
+        self.compileClass(0, self.total)
+        # try:
+        #     self.compileClass(0, self.total)
+        # except Exception as e:
+        #     print(self.inPath.name + ': ' + str(e))
         self.end = True
         # writer.join()
 

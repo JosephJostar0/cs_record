@@ -61,3 +61,35 @@ def isOpenParenthesis(token: Token) -> bool:
 
 def isCloseParenthesis(token: Token) -> bool:
     return token.content == ')' and token.tType == SYMBOL
+
+
+def isStatementKey(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content in ['let', 'if', 'while', 'do', 'return']
+
+
+def isEqual(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content == '='
+
+
+def isOpenSquare(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content == '['
+
+
+def isCloseSquare(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content == ']'
+
+
+def isElse(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content == 'else'
+
+
+def isWhile(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content == 'while'
+
+
+def isReturn(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content == 'return'
+
+
+def isSubDecKWD(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content in ['constructor', 'function', 'method']
