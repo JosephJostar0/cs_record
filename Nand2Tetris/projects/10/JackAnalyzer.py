@@ -203,20 +203,17 @@ class CompilationEngine:
         first = self.tokenList[head]
         if isInteger(first) or isString(first) or isKeywordConst(first):
             self.results.put(WriteElement(first, level + 1))
-        elif isUnaryOp(first):
-            self.results.put(WriteElement(first, level + 1))
-            self.compileTerm(head + 1, tail, level + 1)
         elif isOpenParenthesis(first):
             closeParen = self.tokenList[tail - 1]
-
-            print(f'\n---------head={head} tail={tail}----------')
-            for i in range(head, tail + 1):
-                print(self.tokenList[i])
-
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
             self.results.put(WriteElement(first, level + 1))
-            self.compileExpression(head + 1, tail - 1, level + 1)
+            unaryOP = self.tokenList[head + 2]
+            if isUnaryOp(unaryOP):
+                self.results.put(WriteElement(unaryOP, level + 1))
+                self.compileTerm(head + 3, tail - 1, level + 1)
+            else:
+                self.compileExpression(head + 1, tail - 1, level + 1)
             self.results.put(WriteElement(closeParen, level + 1))
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
@@ -272,9 +269,14 @@ class CompilationEngine:
         while head + offset < tail:
             length = 0
             current = None
+            matchCnt = 0
             while head + offset + length < tail:
                 current = self.tokenList[head + offset + length]
-                if isOp(current):
+                if isOpenParenthesis(current):
+                    matchCnt += 1
+                elif isCloseParenthesis(current):
+                    matchCnt -= 1
+                if isOp(current) and matchCnt == 0:
                     break
                 length += 1
             self.compileTerm(
@@ -836,11 +838,11 @@ class CompilationEngine:
     def runCompilationEngine(self):
         writer = threading.Thread(target=self.writeResult)
         writer.start()
-        self.compileClass(0, self.total)
-        # try:
-        #     self.compileClass(0, self.total)
-        # except Exception as e:
-        #     print(self.inPath.name + ': ' + str(e))
+        # self.compileClass(0, self.total)
+        try:
+            self.compileClass(0, self.total)
+        except Exception as e:
+            print(self.inPath.name + ': ' + str(e))
         self.end = True
         # writer.join()
 
