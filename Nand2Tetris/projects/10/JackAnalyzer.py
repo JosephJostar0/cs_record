@@ -82,7 +82,7 @@ class JackTokenizer:
                     return INT_MIN <= int(token) <= INT_MAX
                 except:
                     return False
-            return isInt(token)
+            return isInt()
 
         def isString():
             return bool(re.match(MATCH_STRING, token))
@@ -208,6 +208,11 @@ class CompilationEngine:
             self.compileTerm(head + 1, tail, level + 1)
         elif isOpenParenthesis(first):
             closeParen = self.tokenList[tail - 1]
+
+            print(f'\n---------head={head} tail={tail}----------')
+            for i in range(head, tail + 1):
+                print(self.tokenList[i])
+
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
             self.results.put(WriteElement(first, level + 1))
@@ -216,17 +221,44 @@ class CompilationEngine:
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
                 self.results.put(WriteElement(first, level + 1))
-            whether = self.tokenList[head + 1]
-            if isOpenSquare(whether):
-                closeSquare = self.tokenList[tail - 1]
-                if not isCloseSquare(closeSquare):
-                    raise ValueError(f'{closeSquare} should be "]".')
-                self.results.put(WriteElement(first, level + 1))
-                self.results.put(WriteElement(whether, level + 1))
-                self.compileExpression(head + 2, tail - 1, level + 1)
-                self.results.put(WriteElement(closeSquare, level + 1))
             else:
-                pass
+                whether = self.tokenList[head + 1]
+                if isOpenSquare(whether):
+                    closeSquare = self.tokenList[tail - 1]
+                    if not isCloseSquare(closeSquare):
+                        raise ValueError(f'{closeSquare} should be "]".')
+                    self.results.put(WriteElement(first, level + 1))
+                    self.results.put(WriteElement(whether, level + 1))
+                    self.compileExpression(head + 2, tail - 1, level + 1)
+                    self.results.put(WriteElement(closeSquare, level + 1))
+                elif isPoint(whether):
+                    subName = self.tokenList[head + 2]
+                    openParen = self.tokenList[head + 3]
+                    closeParen = self.tokenList[tail - 1]
+                    if not subName.tType == IDENTIFIER:
+                        raise ValueError(
+                            f'{subName} should be an {IDENTIFIER}.'
+                        )
+                    if not isOpenParenthesis(openParen):
+                        raise ValueError(f'{openParen} should be "(".')
+                    if not isCloseParenthesis(closeParen):
+                        raise ValueError(f'{openParen} should be ")".')
+                    self.results.put(WriteElement(first, level + 1))
+                    self.results.put(WriteElement(whether, level + 1))
+                    self.results.put(WriteElement(subName, level + 1))
+                    self.results.put(WriteElement(openParen, level + 1))
+                    self.compileExpressionList(head + 4, tail - 1, level + 1)
+                    self.results.put(WriteElement(closeParen, level + 1))
+                elif isOpenBrace(whether):
+                    closeParen = self.tokenList[tail - 1]
+                    if not isCloseParenthesis(closeParen):
+                        raise ValueError(f'{openParen} should be ")".')
+                    self.results.put(WriteElement(first, level + 1))
+                    self.results.put(WriteElement(whether, level + 1))
+                    self.compileExpressionList(head + 2, tail - 1, level + 1)
+                    self.results.put(WriteElement(closeParen, level + 1))
+                else:
+                    raise ValueError('invalid term.')
 
         self.results.put(WriteElement('</term>', level))
 
@@ -246,9 +278,9 @@ class CompilationEngine:
                     break
                 length += 1
             self.compileTerm(
-                head + offset, head + offset+length, level + 1
+                head + offset, head + offset + length, level + 1
             )
-            if not head+offset+length == tail:
+            if not head + offset + length == tail:
                 self.results.put(WriteElement(current, level + 1))
             offset += length + 1
 
@@ -479,10 +511,15 @@ class CompilationEngine:
             if not isOpenSquare(openSquare):
                 return head
             offset = 1
+            matchCnt = 1
             while head + offset < tail:
                 current = self.tokenList[head + offset]
-                if isCloseBrace(current):
-                    break
+                if isOpenSquare(current):
+                    matchCnt += 1
+                if isCloseSquare(current):
+                    matchCnt -= 1
+                    if matchCnt == 0:
+                        break
                 offset += 1
             if head + offset == tail:
                 raise ValueError('invalid letExpression.')
