@@ -97,3 +97,23 @@ def isSubDecKWD(token: Token) -> bool:
 
 def isPoint(token: Token) -> bool:
     return token.tType == SYMBOL and token.content == '.'
+
+
+def isOp(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content in ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+
+
+def isUnaryOp(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content in ['-', '~']
+
+
+def isKeywordConst(token: Token) -> bool:
+    return token.tType == KEYWORD and token.content in ['true', 'false', 'null', 'this']
+
+
+def isInteger(token: Token) -> bool:
+    return token.tType == INTEGER
+
+
+def isString(token: Token) -> bool:
+    return token.tType == STRING

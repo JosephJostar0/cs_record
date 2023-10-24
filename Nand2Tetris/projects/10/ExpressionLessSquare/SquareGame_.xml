@@ -80,6 +80,8 @@
           <identifier> deAlloc </identifier>
           <symbol> ( </symbol>
           <expressionList>
+            <expression>
+            </expression>
           </expressionList>
           <symbol> ) </symbol>
           <symbol> ; </symbol>
@@ -198,6 +200,8 @@
           <identifier> wait </identifier>
           <symbol> ( </symbol>
           <expressionList>
+            <expression>
+            </expression>
           </expressionList>
           <symbol> ) </symbol>
           <symbol> ; </symbol>

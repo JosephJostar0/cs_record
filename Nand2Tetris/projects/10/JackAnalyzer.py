@@ -67,7 +67,7 @@ class JackTokenizer:
         '''
         token = self.current
 
-        def isKeyWord():
+        def isKey():
             return token in KEYWORD_LIST
 
         def isSymbol():
@@ -76,25 +76,24 @@ class JackTokenizer:
         def isIdentifier():
             return bool(re.match(MATCH_IDENTIFIER, token))
 
-        def isInt():
+        def isIntConst():
             def isInt():
                 try:
-                    int(token)
-                    return True
+                    return INT_MIN <= int(token) <= INT_MAX
                 except:
                     return False
-            return isInt() and INT_MIN <= int(token) <= INT_MAX
+            return isInt(token)
 
         def isString():
             return bool(re.match(MATCH_STRING, token))
 
-        if isKeyWord():
+        if isKey():
             return KEYWORD
         elif isSymbol():
             return SYMBOL
         elif isIdentifier():
             return IDENTIFIER
-        elif isInt():
+        elif isIntConst():
             return INTEGER
         elif isString():
             return STRING
@@ -205,6 +204,23 @@ class CompilationEngine:
         Compiles an expression.
         '''
         self.results.put(WriteElement('<expression>', level))
+
+        offset = 0
+        while head + offset < tail:
+            length = 0
+            current = None
+            while head + offset + length < tail:
+                current = self.tokenList[head + offset + length]
+                if isOp(current):
+                    break
+                length += 1
+            self.compileTerm(
+                head + offset, head + offset+length, level + 1
+            )
+            if not head+offset+length == tail:
+                self.results.put(WriteElement(current, level + 1))
+            offset += length + 1
+
         self.results.put(WriteElement('</expression>', level))
 
     def compileExpressionList(self, head: int, tail: int, level: int = 0):
@@ -212,6 +228,23 @@ class CompilationEngine:
         Compiles a (possibly empty) comma-separated list of expressions.
         '''
         self.results.put(WriteElement('<expressionList>', level))
+
+        offset = 0
+        while head + offset < tail:
+            length = 0
+            current = None
+            while head + offset + length < tail:
+                current = self.tokenList[head + offset + length]
+                if isComma(current):
+                    break
+                length += 1
+            self.compileExpression(
+                head + offset, head + offset+length, level + 1
+            )
+            if not head+offset+length == tail:
+                self.results.put(WriteElement(current, level + 1))
+            offset += length + 1
+
         self.results.put(WriteElement('</expressionList>', level))
 
     def compileReturn(self, head: int, tail: int, level: int = 0):
