@@ -31,6 +31,7 @@
           <symbol> = </symbol>
           <expression>
             <term>
+              <identifier> square </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -41,6 +42,7 @@
           <symbol> = </symbol>
           <expression>
             <term>
+              <identifier> direction </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -49,6 +51,7 @@
           <keyword> return </keyword>
           <expression>
             <term>
+              <identifier> square </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -88,6 +91,7 @@
           <expressionList>
             <expression>
               <term>
+                <identifier> square </identifier>
               </term>
             </expression>
           </expressionList>
@@ -118,6 +122,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <identifier> direction </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -142,6 +147,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <identifier> direction </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -166,6 +172,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <identifier> direction </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -190,6 +197,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <identifier> direction </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -218,6 +226,7 @@
           <expressionList>
             <expression>
               <term>
+                <identifier> direction </identifier>
               </term>
             </expression>
           </expressionList>
@@ -261,6 +270,7 @@
           <symbol> = </symbol>
           <expression>
             <term>
+              <identifier> key </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -270,6 +280,7 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <identifier> exit </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -280,6 +291,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -291,6 +303,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> key </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -312,6 +325,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -323,6 +337,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> exit </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -335,6 +350,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -359,6 +375,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -383,6 +400,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -394,6 +412,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> exit </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -406,6 +425,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -417,6 +437,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> key </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -429,6 +450,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -440,6 +462,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> square </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -452,6 +475,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -463,6 +487,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> direction </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -475,6 +500,7 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <identifier> key </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -486,6 +512,7 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
+                      <identifier> key </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>

@@ -216,7 +216,17 @@ class CompilationEngine:
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
                 self.results.put(WriteElement(first, level + 1))
-            
+            whether = self.tokenList[head + 1]
+            if isOpenSquare(whether):
+                closeSquare = self.tokenList[tail - 1]
+                if not isCloseSquare(closeSquare):
+                    raise ValueError(f'{closeSquare} should be "]".')
+                self.results.put(WriteElement(first, level + 1))
+                self.results.put(WriteElement(whether, level + 1))
+                self.compileExpression(head + 2, tail - 1, level + 1)
+                self.results.put(WriteElement(closeSquare, level + 1))
+            else:
+                pass
 
         self.results.put(WriteElement('</term>', level))
 
