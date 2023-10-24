@@ -93,3 +93,7 @@ def isReturn(token: Token) -> bool:
 
 def isSubDecKWD(token: Token) -> bool:
     return token.tType == KEYWORD and token.content in ['constructor', 'function', 'method']
+
+
+def isPoint(token: Token) -> bool:
+    return token.tType == SYMBOL and token.content == '.'
