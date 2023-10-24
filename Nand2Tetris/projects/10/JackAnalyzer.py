@@ -198,6 +198,27 @@ class CompilationEngine:
         A single look-ahead token, which may be one of "[", "(", or ".", suffices to distinguish between the possibilities.
         Any other token is not part of this term and should not be advanced over.
         '''
+        self.results.put(WriteElement('<term>', level))
+
+        first = self.tokenList[head]
+        if isInteger(first) or isString(first) or isKeywordConst(first):
+            self.results.put(WriteElement(first, level + 1))
+        elif isUnaryOp(first):
+            self.results.put(WriteElement(first, level + 1))
+            self.compileTerm(head + 1, tail, level + 1)
+        elif isOpenParenthesis(first):
+            closeParen = self.tokenList[tail - 1]
+            if not isCloseParenthesis(closeParen):
+                raise ValueError(f'{closeParen} should be ")".')
+            self.results.put(WriteElement(first, level + 1))
+            self.compileExpression(head + 1, tail - 1, level + 1)
+            self.results.put(WriteElement(closeParen, level + 1))
+        elif first.tType == IDENTIFIER:
+            if tail - head == 1:
+                self.results.put(WriteElement(first, level + 1))
+            
+
+        self.results.put(WriteElement('</term>', level))
 
     def compileExpression(self, head: int, tail: int, level: int = 0):
         '''

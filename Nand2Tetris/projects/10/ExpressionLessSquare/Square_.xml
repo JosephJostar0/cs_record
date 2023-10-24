@@ -40,6 +40,8 @@
           <identifier> x </identifier>
           <symbol> = </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ; </symbol>
         </letStatement>
@@ -48,6 +50,8 @@
           <identifier> y </identifier>
           <symbol> = </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ; </symbol>
         </letStatement>
@@ -56,6 +60,8 @@
           <identifier> size </identifier>
           <symbol> = </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ; </symbol>
         </letStatement>
@@ -71,6 +77,8 @@
         <returnStatement>
           <keyword> return </keyword>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ; </symbol>
         </returnStatement>
@@ -97,6 +105,9 @@
           <symbol> ( </symbol>
           <expressionList>
             <expression>
+              <term>
+                <keyword> this </keyword>
+              </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
@@ -129,6 +140,8 @@
           <symbol> ( </symbol>
           <expressionList>
             <expression>
+              <term>
+              </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
@@ -142,15 +155,23 @@
           <symbol> ( </symbol>
           <expressionList>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
@@ -183,6 +204,8 @@
           <symbol> ( </symbol>
           <expressionList>
             <expression>
+              <term>
+              </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
@@ -196,15 +219,23 @@
           <symbol> ( </symbol>
           <expressionList>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
             <symbol> , </symbol>
             <expression>
+              <term>
+              </term>
             </expression>
           </expressionList>
           <symbol> ) </symbol>
@@ -233,6 +264,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -251,6 +284,8 @@
               <identifier> size </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -289,6 +324,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -307,6 +344,8 @@
               <identifier> size </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -345,6 +384,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -357,6 +398,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -370,15 +413,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -389,6 +440,8 @@
               <identifier> y </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -400,6 +453,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -413,15 +468,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -453,6 +516,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -465,6 +530,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -478,15 +545,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -497,6 +572,8 @@
               <identifier> y </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -508,6 +585,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -521,15 +600,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -561,6 +648,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -573,6 +662,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -586,15 +677,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -605,6 +704,8 @@
               <identifier> x </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -616,6 +717,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -629,15 +732,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -669,6 +780,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -681,6 +794,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -694,15 +809,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -713,6 +836,8 @@
               <identifier> x </identifier>
               <symbol> = </symbol>
               <expression>
+                <term>
+                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -724,6 +849,8 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>
@@ -737,15 +864,23 @@
               <symbol> ( </symbol>
               <expressionList>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
+                  <term>
+                  </term>
                 </expression>
               </expressionList>
               <symbol> ) </symbol>

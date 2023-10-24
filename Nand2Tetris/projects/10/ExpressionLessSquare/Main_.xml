@@ -30,6 +30,8 @@
           <identifier> game </identifier>
           <symbol> = </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ; </symbol>
         </letStatement>
@@ -84,6 +86,8 @@
           <keyword> if </keyword>
           <symbol> ( </symbol>
           <expression>
+            <term>
+            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
