@@ -202,17 +202,15 @@ class CompilationEngine:
         first = self.tokenList[head]
         if isInteger(first) or isString(first) or isKeywordConst(first):
             self.results.put(WriteElement(first, level + 1))
+        elif isUnaryOp(first):
+            self.results.put(WriteElement(first, level + 1))
+            self.compileTerm(head + 1, tail, level + 1)
         elif isOpenParenthesis(first):
             closeParen = self.tokenList[tail - 1]
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
             self.results.put(WriteElement(first, level + 1))
-            unaryOP = self.tokenList[head + 2]
-            if isUnaryOp(unaryOP):
-                self.results.put(WriteElement(unaryOP, level + 1))
-                self.compileTerm(head + 3, tail - 1, level + 1)
-            else:
-                self.compileExpression(head + 1, tail - 1, level + 1)
+            self.compileExpression(head + 1, tail - 1, level + 1)
             self.results.put(WriteElement(closeParen, level + 1))
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
@@ -255,6 +253,8 @@ class CompilationEngine:
                     self.results.put(WriteElement(closeParen, level + 1))
                 else:
                     raise ValueError('invalid term.')
+        else:
+            raise ValueError('invalid term.')
 
         self.results.put(WriteElement('</term>', level))
 
@@ -275,7 +275,7 @@ class CompilationEngine:
                     matchCnt += 1
                 elif isCloseParenthesis(current):
                     matchCnt -= 1
-                if isOp(current) and matchCnt == 0:
+                elif isOp(current) and matchCnt == 0 and length != 0:
                     break
                 length += 1
             self.compileTerm(

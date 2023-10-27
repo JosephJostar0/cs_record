@@ -319,6 +319,10 @@
           <symbol> ( </symbol>
           <expression>
             <term>
+              <symbol> ~ </symbol>
+              <term>
+                <identifier> exit </identifier>
+              </term>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -576,6 +580,20 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
+                  <symbol> ~ </symbol>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <identifier> key </identifier>
+                      </term>
+                      <symbol> = </symbol>
+                      <term>
+                        <integerConstant> 0 </integerConstant>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
                 </term>
               </expression>
               <symbol> ) </symbol>

@@ -179,10 +179,10 @@
                   <symbol> ( </symbol>
                   <expression>
                     <term>
-                    </term>
-                    <symbol> - </symbol>
-                    <term>
-                      <identifier> j </identifier>
+                      <symbol> - </symbol>
+                      <term>
+                        <identifier> j </identifier>
+                      </term>
                     </term>
                   </expression>
                   <symbol> ) </symbol>
@@ -203,10 +203,10 @@
                   <symbol> ( </symbol>
                   <expression>
                     <term>
-                    </term>
-                    <symbol> - </symbol>
-                    <term>
-                      <integerConstant> 2 </integerConstant>
+                      <symbol> - </symbol>
+                      <term>
+                        <integerConstant> 2 </integerConstant>
+                      </term>
                     </term>
                   </expression>
                   <symbol> ) </symbol>
