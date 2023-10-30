@@ -512,28 +512,6 @@ class CompilationEngine:
         Compiles a (possibly empty) parameter list.
         Does not handle the enclosing "()".
         '''
-        # self.results.put(WriteElement('<parameterList>', level))
-        # if head != tail:
-        #     if tail - head < 2:
-        #         raise ValueError('parameter is invalid.')
-        #     offset = 0
-        #     while head + offset < tail:
-        #         current = self.tokenList[head + offset]
-        #         if offset % 3 == 0 and not isType(current):
-        #             raise ValueError(
-        #                 f'{current} is invalid. It should be a TYPE.')
-        #         if offset % 3 == 1 and not current.tType == IDENTIFIER:
-        #             raise ValueError(
-        #                 f'{current} is invalid. It should be an "{IDENTIFIER}".'
-        #             )
-        #         if offset % 3 == 2 and not isComma(current):
-        #             raise ValueError(
-        #                 f'{current} is invalid. It should be a ",".'
-        #             )
-        #         self.results.put(WriteElement(current, level + 1))
-        #         offset += 1
-        # self.results.put(WriteElement('</parameterList>', level))
-
         if head != tail:
             if tail - head < 2:
                 raise ValueError('parameter is invalid.')
@@ -597,16 +575,6 @@ class CompilationEngine:
             raise ValueError(
                 f'{closeParenthesis} is invalid. It should be a "(".'
             )
-
-        # self.results.put(WriteElement('<subroutineDec>', level))
-        # self.results.put(WriteElement(subKWD, level + 1))
-        # self.results.put(WriteElement(subType, level + 1))
-        # self.results.put(WriteElement(subName, level + 1))
-        # self.results.put(WriteElement(openParenthesis, level + 1))
-        # self.compileParameterList(head + 4, nextId, level + 1)
-        # self.results.put(WriteElement(closeParenthesis, level + 1))
-        # self.compileSubroutineBody(nextId + 1, tail, level + 1)
-        # self.results.put(WriteElement('</subroutineDec>', level))
 
         self.symbalTable.startSubroutine()
         self.compileParameterList(head + 4, nextId, level + 1)
