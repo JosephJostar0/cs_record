@@ -271,9 +271,9 @@ class CompilationEngine:
             matchCnt = 0
             while head + offset + length < tail:
                 current = self.tokenList[head + offset + length]
-                if isOpenParenthesis(current):
+                if isOpenParenthesis(current) or isOpenSquare(current):
                     matchCnt += 1
-                elif isCloseParenthesis(current):
+                elif isCloseParenthesis(current) or isCloseSquare(current):
                     matchCnt -= 1
                 elif isOp(current) and matchCnt == 0 and length != 0:
                     break
@@ -837,11 +837,11 @@ class CompilationEngine:
     def runCompilationEngine(self):
         writer = threading.Thread(target=self.writeResult)
         writer.start()
-        # self.compileClass(0, self.total)
-        try:
-            self.compileClass(0, self.total)
-        except Exception as e:
-            print(self.inPath.name + ': ' + str(e))
+        self.compileClass(0, self.total)
+        # try:
+        #     self.compileClass(0, self.total)
+        # except Exception as e:
+        #     print(self.inPath.name + ': ' + str(e))
         self.end = True
         # writer.join()
 

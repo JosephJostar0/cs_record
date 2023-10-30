@@ -3,12 +3,14 @@ from queue import Queue
 import threading
 
 from CompilerTools import *
+from SymbolTable import SymbolTable
 
 
 class WriteElement:
     def __init__(self, content, level: int):
         self.content = content
         self.level = level
+        self.symbalTable = SymbolTable()
 
     def __str__(self) -> str:
         return '  ' * self.level + str(self.content)
@@ -25,6 +27,7 @@ class CompilationEngine:
         self.results = Queue()
         self.end = False
         self.isSave = isSave
+        self.cName = ''
         if inPath.is_file():
             self.outPath = Path(f'{inPath.parent}/{inPath.stem}_.xml')
         elif inPath.is_dir():
@@ -677,14 +680,18 @@ class CompilationEngine:
         if closeBrace.content != '}' or closeBrace.tType != SYMBOL:
             raise ValueError(f'{closeBrace} is invalid')
 
-        self.results.put(WriteElement('<class>', level))
-        self.results.put(WriteElement(classKWD, level + 1))
-        self.results.put(WriteElement(className, level + 1))
-        self.results.put(WriteElement(openBrace, level + 1))
+        # self.results.put(WriteElement('<class>', level))
+        # self.results.put(WriteElement(classKWD, level + 1))
+        # self.results.put(WriteElement(className, level + 1))
+        # self.results.put(WriteElement(openBrace, level + 1))
+        # nextId = followedClassVar(head + 3, tail - 1)
+        # followedSubroutineDec(nextId, tail - 1)
+        # self.results.put(WriteElement(closeBrace, level + 1))
+        # self.results.put(WriteElement('</class>', level))
+
+        self.cName = className.content
         nextId = followedClassVar(head + 3, tail - 1)
         followedSubroutineDec(nextId, tail - 1)
-        self.results.put(WriteElement(closeBrace, level + 1))
-        self.results.put(WriteElement('</class>', level))
 
     def runCompilationEngine(self):
         if self.isSave:
