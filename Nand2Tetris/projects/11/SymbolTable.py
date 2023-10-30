@@ -5,6 +5,9 @@ class SymbolNode:
         self.kind = kind
         self.index = index
 
+    def __str__(self) -> str:
+        return f'{self.name} {self.sType} {self.kind} {self.index}'
+
 
 class SymbolTable:
     def __init__(self):
@@ -22,7 +25,7 @@ class SymbolTable:
         Defines a new identifier of the given name, type, and kind, and assigns it a running index.
         STATIC and FIELD identifiers have a class scope, while ARG and VAR identifiers have a subroutine scope.
         '''
-        num = self.varCount(sType)
+        num = self.varCount(kind)
         node = SymbolNode(name, sType, kind, num)
         if kind in ['static', 'field']:
             self.whole[name] = node

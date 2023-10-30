@@ -10,10 +10,10 @@ class WriteElement:
     def __init__(self, content, level: int):
         self.content = content
         self.level = level
-        self.symbalTable = SymbolTable()
 
     def __str__(self) -> str:
         return '  ' * self.level + str(self.content)
+        # return ''
 
 
 class CompilationEngine:
@@ -22,28 +22,26 @@ class CompilationEngine:
 
     def setAll(self, inPath: Path, tokenList: list[Token] = [], isSave: bool = False):
         self.inPath = inPath
-        self.tokenList = tokenList
+        self.tokenList: list[Token] = tokenList
         self.total = len(tokenList)
         self.results = Queue()
         self.end = False
         self.isSave = isSave
         self.cName = ''
+        self.symbalTable = SymbolTable()
         if inPath.is_file():
-            self.outPath = Path(f'{inPath.parent}/{inPath.stem}_.xml')
+            self.outPath = Path(f'{inPath.parent}/{inPath.stem}.vm')
         elif inPath.is_dir():
             raise FileExistsError(f"{inPath} isn't a file")
         else:
             raise FileNotFoundError(f"File/Dir '{inPath}' does not exist.")
 
     def writeResult(self):
-        try:
-            file = open(self.outPath, 'w')
-            while not (self.end and self.results.empty()):
-                element: WriteElement = self.results.get()
+        open(self.outPath, 'w', encoding=ENCODE).close()
+        while not (self.end and self.results.empty()):
+            element: WriteElement = self.results.get()
+            with open(self.outPath, 'a', encoding=ENCODE) as file:
                 file.write(str(element) + '\n')
-            file.close()
-        except Exception as e:
-            print(e)
 
     def compileTerm(self, head: int, tail: int, level: int = 0):
         '''
@@ -126,9 +124,9 @@ class CompilationEngine:
             matchCnt = 0
             while head + offset + length < tail:
                 current = self.tokenList[head + offset + length]
-                if isOpenParenthesis(current):
+                if isOpenParenthesis(current) or isOpenSquare(current):
                     matchCnt += 1
-                elif isCloseParenthesis(current):
+                elif isCloseParenthesis(current) or isCloseSquare(current):
                     matchCnt -= 1
                 elif isOp(current) and matchCnt == 0 and length != 0:
                     break
@@ -451,8 +449,6 @@ class CompilationEngine:
         '''
         Compiles a var declaration.
         '''
-        self.results.put(WriteElement('<varDec>', level))
-
         if head != tail:
             if tail-head < 4:
                 raise ValueError('varDec is too short.')
@@ -466,17 +462,16 @@ class CompilationEngine:
             if not isSemicolon(varSemicolon):
                 raise ValueError(f'{varSemicolon} must be ";".')
 
-            self.results.put(WriteElement(varKWD, level + 1))
-            self.results.put(WriteElement(varType, level + 1))
             for offset in range(0, tail - head - 3):
                 current = self.tokenList[head + 2 + offset]
-                if offset % 2 == 0 and current.tType != IDENTIFIER:
-                    raise ValueError(f'{current} must be an {IDENTIFIER}.')
+                if offset % 2 == 0:
+                    if current.tType != IDENTIFIER:
+                        raise ValueError(f'{current} must be an {IDENTIFIER}.')
+                    self.symbalTable.define(
+                        current.content, varType.content, varKWD.content
+                    )
                 if offset % 2 == 1 and not isComma(current):
                     raise ValueError(f'{current} must be a ",".')
-                self.results.put(WriteElement(current, level + 1))
-            self.results.put(WriteElement(varSemicolon, level + 1))
-        self.results.put(WriteElement('</varDec>', level))
 
     def compileSubroutineBody(self, head: int, tail: int, level: int = 0):
         '''
@@ -509,45 +504,69 @@ class CompilationEngine:
                 f'{openBrace} and {closeBrace} must be'+' "{ and }"'
             )
 
-        self.results.put(WriteElement('<subroutineBody>', level))
-        self.results.put(WriteElement(openBrace, level + 1))
         nextId = followedVarDec(head + 1, tail - 1)
         self.compileStatements(nextId, tail - 1, level + 1)
-        self.results.put(WriteElement(closeBrace, level + 1))
-        self.results.put(WriteElement('</subroutineBody>', level))
 
     def compileParameterList(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a (possibly empty) parameter list.
         Does not handle the enclosing "()".
         '''
-        self.results.put(WriteElement('<parameterList>', level))
+        # self.results.put(WriteElement('<parameterList>', level))
+        # if head != tail:
+        #     if tail - head < 2:
+        #         raise ValueError('parameter is invalid.')
+        #     offset = 0
+        #     while head + offset < tail:
+        #         current = self.tokenList[head + offset]
+        #         if offset % 3 == 0 and not isType(current):
+        #             raise ValueError(
+        #                 f'{current} is invalid. It should be a TYPE.')
+        #         if offset % 3 == 1 and not current.tType == IDENTIFIER:
+        #             raise ValueError(
+        #                 f'{current} is invalid. It should be an "{IDENTIFIER}".'
+        #             )
+        #         if offset % 3 == 2 and not isComma(current):
+        #             raise ValueError(
+        #                 f'{current} is invalid. It should be a ",".'
+        #             )
+        #         self.results.put(WriteElement(current, level + 1))
+        #         offset += 1
+        # self.results.put(WriteElement('</parameterList>', level))
+
         if head != tail:
             if tail - head < 2:
                 raise ValueError('parameter is invalid.')
             offset = 0
+            segType = ''
+            segName = ''
             while head + offset < tail:
-                current = self.tokenList[head + offset]
-                if offset % 3 == 0 and not isType(current):
-                    raise ValueError(
-                        f'{current} is invalid. It should be a TYPE.')
-                if offset % 3 == 1 and not current.tType == IDENTIFIER:
-                    raise ValueError(
-                        f'{current} is invalid. It should be an "{IDENTIFIER}".'
-                    )
-                if offset % 2 == 2 and not isComma(current):
-                    raise ValueError(
-                        f'{current} is invalid. It should be a ",".'
-                    )
-                self.results.put(WriteElement(current, level + 1))
+                current: Token = self.tokenList[head + offset]
+                if offset % 3 == 0:
+                    if not isType(current):
+                        raise ValueError(
+                            f'{current} is invalid. It should be a TYPE.')
+                    segType = current.content
+                if offset % 3 == 1:
+                    if not current.tType == IDENTIFIER:
+                        raise ValueError(
+                            f'{current} is invalid. It should be an "{IDENTIFIER}".'
+                        )
+                    segName = current.content
+                if offset % 3 == 2:
+                    if not isComma(current):
+                        raise ValueError(
+                            f'{current} is invalid. It should be a ",".'
+                        )
+                    self.symbalTable.define(segName, segType, 'arg')
                 offset += 1
-        self.results.put(WriteElement('</parameterList>', level))
+            self.symbalTable.define(segName, segType, 'arg')
 
     def compileSubroutineDec(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a complete method, function, or constructor.
         '''
-        def followedParamList(head: int, tail: int) -> int:
+        def handleParamList(head: int, tail: int) -> int:
             offset = 0
             while head + offset < tail:
                 current = self.tokenList[head + offset]
@@ -560,7 +579,7 @@ class CompilationEngine:
         subType = self.tokenList[head + 1]
         subName = self.tokenList[head + 2]
         openParenthesis = self.tokenList[head + 3]
-        nextId = followedParamList(head + 4, tail)
+        nextId = handleParamList(head + 4, tail)
         closeParenthesis = self.tokenList[nextId]
         if not (isType(subType) or (subType.content == 'void' and subType.tType == KEYWORD)):
             raise ValueError(
@@ -579,15 +598,19 @@ class CompilationEngine:
                 f'{closeParenthesis} is invalid. It should be a "(".'
             )
 
-        self.results.put(WriteElement('<subroutineDec>', level))
-        self.results.put(WriteElement(subKWD, level + 1))
-        self.results.put(WriteElement(subType, level + 1))
-        self.results.put(WriteElement(subName, level + 1))
-        self.results.put(WriteElement(openParenthesis, level + 1))
+        # self.results.put(WriteElement('<subroutineDec>', level))
+        # self.results.put(WriteElement(subKWD, level + 1))
+        # self.results.put(WriteElement(subType, level + 1))
+        # self.results.put(WriteElement(subName, level + 1))
+        # self.results.put(WriteElement(openParenthesis, level + 1))
+        # self.compileParameterList(head + 4, nextId, level + 1)
+        # self.results.put(WriteElement(closeParenthesis, level + 1))
+        # self.compileSubroutineBody(nextId + 1, tail, level + 1)
+        # self.results.put(WriteElement('</subroutineDec>', level))
+
+        self.symbalTable.startSubroutine()
         self.compileParameterList(head + 4, nextId, level + 1)
-        self.results.put(WriteElement(closeParenthesis, level + 1))
         self.compileSubroutineBody(nextId + 1, tail, level + 1)
-        self.results.put(WriteElement('</subroutineDec>', level))
 
     def compileClassVarDec(self, head: int, tail: int, level: int = 0):
         '''
@@ -595,20 +618,21 @@ class CompilationEngine:
         '''
         def getVarNames(head: int, tail: int) -> list[Token]:
             cnt = 0
-            result = []
+            names = []
             while head + cnt < tail:
                 current = self.tokenList[head + cnt]
-                if cnt % 2 == 0 and current.tType != IDENTIFIER:
-                    raise ValueError(
-                        f"{current} is invalid. It should be an {IDENTIFIER}."
-                    )
+                if cnt % 2 == 0:
+                    if current.tType != IDENTIFIER:
+                        raise ValueError(
+                            f"{current} is invalid. It should be an {IDENTIFIER}."
+                        )
+                    names.append(current)
                 elif cnt % 2 == 1 and not isComma(current):
                     raise ValueError(
                         f"{current} is invalid. It should be a ','."
                     )
-                result.append(current)
                 cnt += 1
-            return result
+            return names
 
         varKWD = self.tokenList[head]
         varType = self.tokenList[head + 1]
@@ -616,20 +640,19 @@ class CompilationEngine:
         semicolon = self.tokenList[tail - 1]
         if not isType(varType):
             raise ValueError(f'{varType} is invalid. It should be a TYPE.')
+        if not isSemicolon(semicolon):
+            raise ValueError(f'{varType} is invalid. It should be ";".')
 
-        self.results.put(WriteElement('<classVarDec>', level))
-        self.results.put(WriteElement(varKWD, level + 1))
-        self.results.put(WriteElement(varType, level + 1))
         for token in varNames:
-            self.results.put(WriteElement(token, level + 1))
-        self.results.put(WriteElement(semicolon, level + 1))
-        self.results.put(WriteElement('</classVarDec>', level))
+            self.symbalTable.define(
+                token.content, varType.content, varKWD.content
+            )
 
     def compileClass(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a complete class
         '''
-        def followedClassVar(head: int, tail: int) -> int:
+        def handleClassVar(head: int, tail: int) -> int:
             offset = 0
             while head + offset < tail:
                 current = self.tokenList[head + offset]
@@ -649,7 +672,7 @@ class CompilationEngine:
                     raise Exception(f'missed ";"')
             return head + offset
 
-        def followedSubroutineDec(head: int, tail: int) -> int:
+        def handleSubroutineDec(head: int, tail: int) -> int:
             offset = 0
             while head + offset < tail:
                 current = self.tokenList[head + offset]
@@ -680,18 +703,9 @@ class CompilationEngine:
         if closeBrace.content != '}' or closeBrace.tType != SYMBOL:
             raise ValueError(f'{closeBrace} is invalid')
 
-        # self.results.put(WriteElement('<class>', level))
-        # self.results.put(WriteElement(classKWD, level + 1))
-        # self.results.put(WriteElement(className, level + 1))
-        # self.results.put(WriteElement(openBrace, level + 1))
-        # nextId = followedClassVar(head + 3, tail - 1)
-        # followedSubroutineDec(nextId, tail - 1)
-        # self.results.put(WriteElement(closeBrace, level + 1))
-        # self.results.put(WriteElement('</class>', level))
-
         self.cName = className.content
-        nextId = followedClassVar(head + 3, tail - 1)
-        followedSubroutineDec(nextId, tail - 1)
+        nextId = handleClassVar(head + 3, tail - 1)
+        handleSubroutineDec(nextId, tail - 1)
 
     def runCompilationEngine(self):
         if self.isSave:

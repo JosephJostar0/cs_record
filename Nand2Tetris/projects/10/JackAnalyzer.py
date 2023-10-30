@@ -680,7 +680,7 @@ class CompilationEngine:
                     raise ValueError(
                         f'{current} is invalid. It should be an "{IDENTIFIER}".'
                     )
-                if offset % 2 == 2 and not isComma(current):
+                if offset % 3 == 2 and not isComma(current):
                     raise ValueError(
                         f'{current} is invalid. It should be a ",".'
                     )
@@ -761,6 +761,8 @@ class CompilationEngine:
         semicolon = self.tokenList[tail - 1]
         if not isType(varType):
             raise ValueError(f'{varType} is invalid. It should be a TYPE.')
+        if not isSemicolon(semicolon):
+            raise ValueError(f'{semicolon} is invalid. It should be ";".')
 
         self.results.put(WriteElement('<classVarDec>', level))
         self.results.put(WriteElement(varKWD, level + 1))
@@ -837,11 +839,11 @@ class CompilationEngine:
     def runCompilationEngine(self):
         writer = threading.Thread(target=self.writeResult)
         writer.start()
-        self.compileClass(0, self.total)
-        # try:
-        #     self.compileClass(0, self.total)
-        # except Exception as e:
-        #     print(self.inPath.name + ': ' + str(e))
+        # self.compileClass(0, self.total)
+        try:
+            self.compileClass(0, self.total)
+        except Exception as e:
+            print(self.inPath.name + ': ' + str(e))
         self.end = True
         # writer.join()
 
