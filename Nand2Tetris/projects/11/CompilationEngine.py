@@ -4,6 +4,7 @@ import threading
 
 from CompilerTools import *
 from SymbolTable import SymbolTable
+from VMWriter import VMWriter
 
 
 class WriteElement:
@@ -377,9 +378,7 @@ class CompilationEngine:
                 offset += 1
             if head + offset == tail:
                 raise ValueError('invalid letExpression.')
-            self.results.put(WriteElement(openSquare, level + 1))
             self.compileExpression(head + 1, head + offset, level + 1)
-            self.results.put(WriteElement(current, level + 1))
             return head + offset + 1
 
         letKWD = self.tokenList[head]
@@ -389,18 +388,17 @@ class CompilationEngine:
             raise ValueError(f'{varName} should be an {IDENTIFIER}.')
         if not isSemicolon(semicolon):
             raise ValueError(f'{semicolon} should be a ";".')
-
-        self.results.put(WriteElement('<letStatement>', level))
-        self.results.put(WriteElement(letKWD, level + 1))
-        self.results.put(WriteElement(varName, level + 1))
         nextId = handleLetExpression(head + 2, tail)
         equal = self.tokenList[nextId]
         if not isEqual(equal):
             raise ValueError(f'{equal} should be a "=".')
-        self.results.put(WriteElement(equal, level + 1))
+
+        name = varName.content
+        # vType = self.symbalTable.typeOf(name)
+        kind = self.symbalTable.kindOf(name)
+        index = self.symbalTable.indexOf(name)
         self.compileExpression(nextId + 1, tail - 1, level + 1)
-        self.results.put(WriteElement(semicolon, level + 1))
-        self.results.put(WriteElement('</letStatement>', level))
+        self.writer.writePop(kind, index)
 
     def compileStatements(self, head: int, tail: int, level: int = 0):
         '''
@@ -420,8 +418,6 @@ class CompilationEngine:
                 self.compileReturn(head, tail, level + 1)
             else:
                 raise ValueError(f'{content} should be a statementKey')
-
-        self.results.put(WriteElement('<statements>', level))
 
         offset = 0
         while head + offset < tail:
@@ -443,7 +439,6 @@ class CompilationEngine:
                 current.content, head + offset, head + offset + length
             )
             offset += length
-        self.results.put(WriteElement('</statements>', level))
 
     def compileVarDec(self, head: int, tail: int, level: int = 0):
         '''
@@ -681,7 +676,9 @@ class CompilationEngine:
             writer.start()
         # self.compileClass(0, self.total)
         try:
+            self.writer = VMWriter(self.outPath)
             self.compileClass(0, self.total)
+            self.writer.close()
         except Exception as e:
             print(self.inPath.name + ': ' + str(e))
         self.end = True

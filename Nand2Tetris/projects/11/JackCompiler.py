@@ -51,4 +51,4 @@ def getJackAnalyzer():
 
 
 if __name__ == '__main__':
-    getJackAnalyzer().runJackAnalyzer(True)
+    getJackAnalyzer().runJackAnalyzer(False)
