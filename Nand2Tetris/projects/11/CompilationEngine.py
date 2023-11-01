@@ -29,8 +29,10 @@ class CompilationEngine:
         self.end = False
         self.isSave = isSave
         self.cName = ''
+        self.cField = 0
         self.index = 0
         self.symbalTable = SymbolTable()
+        self.methodList = []
         if inPath.is_file():
             self.outPath = Path(f'{inPath.parent}/{inPath.stem}.vm')
         elif inPath.is_dir():
@@ -118,9 +120,17 @@ class CompilationEngine:
                         raise ValueError(f'{openParen} should be "(".')
                     if not isCloseParenthesis(closeParen):
                         raise ValueError(f'{openParen} should be ")".')
+                    if not self.symbalTable.kindOf(first.content) is None:
+                        kind = self.symbalTable.kindOf(first.content)
+                        index = self.symbalTable.indexOf(first.content)
+                        self.writer.writePush(kind, index)
                     nArgs = self.compileExpressionList(
                         head + 4, tail - 1, level + 1)
                     funName = f'{first.content}.{subName.content}'
+                    if not self.symbalTable.kindOf(first.content) is None:
+                        nArgs += 1
+                        vType = self.symbalTable.typeOf(first.content)
+                        funName = f'{vType}.{subName.content}'
                     self.writer.writeCall(funName, nArgs)
                 elif isOpenBrace(whether):
                     closeParen = self.tokenList[tail - 1]
@@ -255,16 +265,28 @@ class CompilationEngine:
                 closeParen = self.tokenList[nexId]
                 if not isCloseParenthesis(closeParen):
                     raise ValueError(f'{closeParen} shoule be ")"')
+                if not self.symbalTable.kindOf(name) is None:
+                    kind = self.symbalTable.kindOf(name)
+                    index = self.symbalTable.indexOf(name)
+                    self.writer.writePush(kind, index)
                 nArgs = self.compileExpressionList(head + 4, nexId, level + 1)
                 funName = f'{name}.{subName}'
+                if not self.symbalTable.kindOf(name) is None:
+                    vType = self.symbalTable.typeOf(name)
+                    funName = f'{vType}.{subName}'
+                    nArgs += 1
                 self.writer.writeCall(funName, nArgs)
             elif isOpenParenthesis(whether):
                 nextId = handleCallList(head + 2, tail)
                 closeParen = self.tokenList[nextId]
                 if not isCloseParenthesis(closeParen):
                     raise ValueError(f'{closeParen} shoule be ")"')
+                if name in self.methodList:
+                    self.writer.writePush('pointer', 0)
                 nArgs = self.compileExpressionList(head + 2, nextId, level + 1)
                 funName = f'{self.cName}.{name}'
+                if name in self.methodList:
+                    nArgs += 1
                 self.writer.writeCall(funName, nArgs)
             else:
                 raise ValueError(f'{whether} should be "("')
@@ -630,12 +652,19 @@ class CompilationEngine:
             )
 
         self.symbalTable.startSubroutine()
-        self.compileParameterList(head + 4, nextId, level + 1)
         fname = f'{self.cName}.{subName.content}'
         cnt = cntArgs(nextId + 1, tail)
-        if fname == 'method':
-            cnt += 1
+        fKind = subKWD.content
         self.writer.writeFunction(fname, cnt)
+        if fKind == 'method':
+            self.symbalTable.define('this', self.cName, 'argument')
+            self.writer.writePush('argument', 0)
+            self.writer.writePop('pointer', 0)
+        elif fKind == 'constructor':
+            self.writer.writePush('constant', self.cField)
+            self.writer.writeCall('Memory.alloc', 1)
+            self.writer.writePop('pointer', 0)
+        self.compileParameterList(head + 4, nextId, level + 1)
         self.compileSubroutineBody(nextId + 1, tail, level + 1)
 
     def compileClassVarDec(self, head: int, tail: int, level: int = 0):
@@ -669,6 +698,9 @@ class CompilationEngine:
         if not isSemicolon(semicolon):
             raise ValueError(f'{varType} is invalid. It should be ";".')
 
+        if varKWD.content == 'field':
+            self.cField += len(varNames)
+            varKWD.content = 'this'
         for token in varNames:
             self.symbalTable.define(
                 token.content, varType.content, varKWD.content
@@ -716,6 +748,17 @@ class CompilationEngine:
                 offset += index
             return head + offset
 
+        def getMethods():
+            i = head
+            while i < tail:
+                current = self.tokenList[i]
+                if isSubDecKWD(current) and current.content == 'method':
+                    if i + 2 >= tail:
+                        raise ValueError('invalid method.')
+                    temp = self.tokenList[i + 2]
+                    self.methodList.append(temp.content)
+                i += 1
+
         classKWD = self.tokenList[head]
         className = self.tokenList[head + 1]
         openBrace = self.tokenList[head + 2]
@@ -730,6 +773,7 @@ class CompilationEngine:
             raise ValueError(f'{closeBrace} is invalid')
 
         self.cName = className.content
+        getMethods()
         nextId = handleClassVar(head + 3, tail - 1)
         handleSubroutineDec(nextId, tail - 1)
 

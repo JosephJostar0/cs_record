@@ -27,7 +27,7 @@ class SymbolTable:
         '''
         num = self.varCount(kind)
         node = SymbolNode(name, sType, kind, num)
-        if kind in ['static', 'field']:
+        if kind in ['static', 'this']:
             self.whole[name] = node
         else:
             self.subroutine[name] = node
