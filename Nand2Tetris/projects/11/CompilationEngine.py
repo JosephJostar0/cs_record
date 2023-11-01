@@ -65,8 +65,18 @@ class CompilationEngine:
             self.writer.writePush('constant', first.content)
         elif isString(first):
             self.results.put(WriteElement(first, level + 1))
-        elif isKeywordConst(first):
-            self.results.put(WriteElement(first, level + 1))
+        elif isKeywordConst(first):  # 'true', 'false', 'null', 'this'
+            content = first.content
+            if content == 'true':
+                self.writer.writePush('constant', 0)
+                self.writer.writeArithmetic('not')
+            elif content == 'false':
+                self.writer.writePush('constant', 0)
+            elif content == 'null':
+                self.writer.writePush('constant', 0)
+            else:  # this
+                self.writer.writePush('pointer', 0)
+
         elif isUnaryOp(first):
             self.compileTerm(head + 1, tail, level + 1)
             self.writer.writeArithmetic(UNARY_DICT[first.content])
@@ -129,9 +139,9 @@ class CompilationEngine:
         '''
         Compiles an expression.
         '''
-        print(f'\n-------expression------------')
-        for i in range(head, tail):
-            print(self.tokenList[i])
+        # print(f'\n-------expression------------')
+        # for i in range(head, tail):
+        #     print(self.tokenList[i])
 
         def writeAri(ari: str):
             if ari in ARI_DICT.keys():
@@ -265,6 +275,7 @@ class CompilationEngine:
             raise ValueError(f'{semicolon} should be ";"')
 
         handleSubroutineCall(head + 1, tail - 1)
+        self.writer.writePop('temp', 0)
 
     def compileWhile(self, head: int, tail: int, level: int = 0):
         '''
@@ -305,6 +316,7 @@ class CompilationEngine:
         label1 = f'endWhile{self.getIndex()}'
         self.writer.writeLabel(label0)
         self.compileExpression(head + 2, nextId, level + 1)
+        self.writer.writeArithmetic('not')
         self.writer.writeIf(label1)
         self.compileStatements(nextId + 2, tail - 1, level + 1)
         self.writer.writeGoto(label0)
@@ -376,6 +388,7 @@ class CompilationEngine:
         label0 = f'endIf{self.getIndex()}'
         label1 = f'endElse{self.getIndex()}'
         self.compileExpression(head + 2, nextId0, level + 1)
+        self.writer.writeArithmetic('not')
         self.writer.writeIf(label0)
         self.compileStatements(nextId0 + 2, nextId1, level + 1)
         self.writer.writeGoto(label1)
@@ -472,7 +485,7 @@ class CompilationEngine:
         Compiles a var declaration.
         '''
         if head != tail:
-            if tail-head < 4:
+            if tail - head < 4:
                 raise ValueError('varDec is too short.')
             varKWD = self.tokenList[head]
             varType = self.tokenList[head + 1]
@@ -529,12 +542,11 @@ class CompilationEngine:
         nextId = followedVarDec(head + 1, tail - 1)
         self.compileStatements(nextId, tail - 1, level + 1)
 
-    def compileParameterList(self, head: int, tail: int, level: int = 0) -> int:
+    def compileParameterList(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a (possibly empty) parameter list.
         Does not handle the enclosing "()".
         '''
-        cnt = 0
         if head != tail:
             if tail - head < 2:
                 raise ValueError('parameter is invalid.')
@@ -562,8 +574,6 @@ class CompilationEngine:
                     self.symbalTable.define(segName, segType, 'argument')
                 offset += 1
             self.symbalTable.define(segName, segType, 'argument')
-            cnt += 1
-        return cnt
 
     def compileSubroutineDec(self, head: int, tail: int, level: int = 0):
         '''
@@ -577,6 +587,24 @@ class CompilationEngine:
                     break
                 offset += 1
             return head + offset
+
+        def cntArgs(head: int, tail: int) -> int:
+            offset = 1
+            cnt = 0
+            while head + offset < tail:
+                current = self.tokenList[head + offset]
+                if current.content != 'var' or current.tType != KEYWORD:
+                    break
+                length = 0
+                while head + offset + length < tail:
+                    current = self.tokenList[head + offset + length]
+                    if current.tType == IDENTIFIER:
+                        cnt += 1
+                    if isSemicolon(current):
+                        break
+                    length += 1
+                offset += length + 1
+            return cnt
 
         subKWD = self.tokenList[head]
         subType = self.tokenList[head + 1]
@@ -602,8 +630,9 @@ class CompilationEngine:
             )
 
         self.symbalTable.startSubroutine()
-        cnt = self.compileParameterList(head + 4, nextId, level + 1)
+        self.compileParameterList(head + 4, nextId, level + 1)
         fname = f'{self.cName}.{subName.content}'
+        cnt = cntArgs(nextId + 1, tail)
         if fname == 'method':
             cnt += 1
         self.writer.writeFunction(fname, cnt)
