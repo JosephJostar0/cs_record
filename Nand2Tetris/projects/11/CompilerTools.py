@@ -41,7 +41,11 @@ class Token:
 
 
 # CompilationEngine
-ARI_DICT = {'+': 'add', '-': 'sub', '&': 'and', '|': 'or'}
+ARI_DICT = {
+    '+': 'add', '-': 'sub', '&': 'and', '|': 'or',
+    '>': 'gt', '<': 'lt', '=': 'eq'
+}
+UNARY_DICT = {'-': 'neg', '~': 'not'}
 
 
 def isSemicolon(token: Token) -> bool:

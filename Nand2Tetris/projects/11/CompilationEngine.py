@@ -56,9 +56,9 @@ class CompilationEngine:
         A single look-ahead token, which may be one of "[", "(", or ".", suffices to distinguish between the possibilities.
         Any other token is not part of this term and should not be advanced over.
         '''
-        print('\n----------term---------------')
-        for i in range(head, tail):
-            print(self.tokenList[i])
+        # print('\n----------term---------------')
+        # for i in range(head, tail):
+        #     print(self.tokenList[i])
 
         first = self.tokenList[head]
         if isInteger(first):
@@ -68,8 +68,8 @@ class CompilationEngine:
         elif isKeywordConst(first):
             self.results.put(WriteElement(first, level + 1))
         elif isUnaryOp(first):
-            self.results.put(WriteElement(first, level + 1))
             self.compileTerm(head + 1, tail, level + 1)
+            self.writer.writeArithmetic(UNARY_DICT[first.content])
         elif isOpenParenthesis(first):
             closeParen = self.tokenList[tail - 1]
             if not isCloseParenthesis(closeParen):
@@ -80,6 +80,12 @@ class CompilationEngine:
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
                 self.results.put(WriteElement(first, level + 1))
+                name = first.content
+                kind = self.symbalTable.kindOf(name)
+                if kind is None:
+                    raise ValueError(f'{name} should be an IDENTIFIER.')
+                index = self.symbalTable.indexOf(name)
+                self.writer.writePush(kind, index)
             else:
                 whether = self.tokenList[head + 1]
                 if isOpenSquare(whether):
@@ -102,12 +108,10 @@ class CompilationEngine:
                         raise ValueError(f'{openParen} should be "(".')
                     if not isCloseParenthesis(closeParen):
                         raise ValueError(f'{openParen} should be ")".')
-                    self.results.put(WriteElement(first, level + 1))
-                    self.results.put(WriteElement(whether, level + 1))
-                    self.results.put(WriteElement(subName, level + 1))
-                    self.results.put(WriteElement(openParen, level + 1))
-                    self.compileExpressionList(head + 4, tail - 1, level + 1)
-                    self.results.put(WriteElement(closeParen, level + 1))
+                    nArgs = self.compileExpressionList(
+                        head + 4, tail - 1, level + 1)
+                    funName = f'{first.content}.{subName.content}'
+                    self.writer.writeCall(funName, nArgs)
                 elif isOpenBrace(whether):
                     closeParen = self.tokenList[tail - 1]
                     if not isCloseParenthesis(closeParen):
@@ -159,7 +163,7 @@ class CompilationEngine:
             self.compileTerm(
                 head + offset, head + offset + length, level + 1
             )
-            if len(stack) > 2 and stack[-1] == ')':
+            if len(stack) > 1 and stack[-1] == ')':
                 stack.pop()
                 num = 1
                 while num != 0 and len(stack) != 0:
@@ -297,15 +301,14 @@ class CompilationEngine:
         if not isCloseBrace(closeBrace):
             raise ValueError(f'{closeBrace} should be ")"')
 
-        self.results.put(WriteElement('<whileStatement>', level))
-        self.results.put(WriteElement(whileKWD, level + 1))
-        self.results.put(WriteElement(openParen, level + 1))
+        label0 = f'while{self.getIndex()}'
+        label1 = f'endWhile{self.getIndex()}'
+        self.writer.writeLabel(label0)
         self.compileExpression(head + 2, nextId, level + 1)
-        self.results.put(WriteElement(closeParen, level + 1))
-        self.results.put(WriteElement(openBrace, level + 1))
+        self.writer.writeIf(label1)
         self.compileStatements(nextId + 2, tail - 1, level + 1)
-        self.results.put(WriteElement(closeBrace, level + 1))
-        self.results.put(WriteElement('</whileStatement>', level))
+        self.writer.writeGoto(label0)
+        self.writer.writeLabel(label1)
 
     def compileIf(self, head: int, tail: int, level: int = 0):
         '''
@@ -352,10 +355,7 @@ class CompilationEngine:
             if not isCloseBrace(closeBrace):
                 raise ValueError(f'{closeBrace} should be ")".')
 
-            self.results.put(WriteElement(elseKWD, level + 1))
-            self.results.put(WriteElement(openBrace, level + 1))
             self.compileStatements(head + 2, tail - 1, level + 1)
-            self.results.put(WriteElement(closeBrace, level + 1))
 
         ifKWD = self.tokenList[head]
         openParen = self.tokenList[head + 1]
@@ -373,17 +373,16 @@ class CompilationEngine:
         if not isCloseBrace(closeBrace):
             raise ValueError(f'{closeBrace} should be ")".')
 
-        self.results.put(WriteElement('<ifStatement>', level))
-        self.results.put(WriteElement(ifKWD, level + 1))
-        self.results.put(WriteElement(openParen, level + 1))
+        label0 = f'endIf{self.getIndex()}'
+        label1 = f'endElse{self.getIndex()}'
         self.compileExpression(head + 2, nextId0, level + 1)
-        self.results.put(WriteElement(closeParen, level + 1))
-        self.results.put(WriteElement(openBrace, level + 1))
+        self.writer.writeIf(label0)
         self.compileStatements(nextId0 + 2, nextId1, level + 1)
-        self.results.put(WriteElement(closeBrace, level + 1))
+        self.writer.writeGoto(label1)
+        self.writer.writeLabel(label0)
         if nextId1 < tail - 1:
             handleElse(nextId1 + 1, tail)
-        self.results.put(WriteElement('</ifStatement>', level))
+        self.writer.writeLabel(label1)
 
     def compileLet(self, head: int, tail: int, level: int = 0):
         '''
@@ -491,7 +490,7 @@ class CompilationEngine:
                     if current.tType != IDENTIFIER:
                         raise ValueError(f'{current} must be an {IDENTIFIER}.')
                     self.symbalTable.define(
-                        current.content, varType.content, varKWD.content
+                        current.content, varType.content, 'local'
                     )
                 if offset % 2 == 1 and not isComma(current):
                     raise ValueError(f'{current} must be a ",".')
@@ -560,9 +559,9 @@ class CompilationEngine:
                         raise ValueError(
                             f'{current} is invalid. It should be a ",".'
                         )
-                    self.symbalTable.define(segName, segType, 'arg')
+                    self.symbalTable.define(segName, segType, 'argument')
                 offset += 1
-            self.symbalTable.define(segName, segType, 'arg')
+            self.symbalTable.define(segName, segType, 'argument')
             cnt += 1
         return cnt
 
@@ -605,6 +604,8 @@ class CompilationEngine:
         self.symbalTable.startSubroutine()
         cnt = self.compileParameterList(head + 4, nextId, level + 1)
         fname = f'{self.cName}.{subName.content}'
+        if fname == 'method':
+            cnt += 1
         self.writer.writeFunction(fname, cnt)
         self.compileSubroutineBody(nextId + 1, tail, level + 1)
 
@@ -704,9 +705,6 @@ class CompilationEngine:
         handleSubroutineDec(nextId, tail - 1)
 
     def runCompilationEngine(self):
-        if self.isSave:
-            writer = threading.Thread(target=self.writeResult)
-            writer.start()
         # self.compileClass(0, self.total)
         try:
             self.writer = VMWriter(self.outPath)
@@ -715,4 +713,3 @@ class CompilationEngine:
         except Exception as e:
             print(self.inPath.name + ': ' + str(e))
         self.end = True
-        # writer.join()
