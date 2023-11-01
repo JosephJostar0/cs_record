@@ -41,6 +41,9 @@ class Token:
 
 
 # CompilationEngine
+ARI_DICT = {'+': 'add', '-': 'sub', '&': 'and', '|': 'or'}
+
+
 def isSemicolon(token: Token) -> bool:
     return token.content == ';' and token.tType == SYMBOL
 

@@ -29,6 +29,7 @@ class CompilationEngine:
         self.end = False
         self.isSave = isSave
         self.cName = ''
+        self.index = 0
         self.symbalTable = SymbolTable()
         if inPath.is_file():
             self.outPath = Path(f'{inPath.parent}/{inPath.stem}.vm')
@@ -44,6 +45,10 @@ class CompilationEngine:
             with open(self.outPath, 'a', encoding=ENCODE) as file:
                 file.write(str(element) + '\n')
 
+    def getIndex(self):
+        self.index += 1
+        return self.index - 1
+
     def compileTerm(self, head: int, tail: int, level: int = 0):
         '''
         Compiles a term.
@@ -51,10 +56,16 @@ class CompilationEngine:
         A single look-ahead token, which may be one of "[", "(", or ".", suffices to distinguish between the possibilities.
         Any other token is not part of this term and should not be advanced over.
         '''
-        self.results.put(WriteElement('<term>', level))
+        print('\n----------term---------------')
+        for i in range(head, tail):
+            print(self.tokenList[i])
 
         first = self.tokenList[head]
-        if isInteger(first) or isString(first) or isKeywordConst(first):
+        if isInteger(first):
+            self.writer.writePush('constant', first.content)
+        elif isString(first):
+            self.results.put(WriteElement(first, level + 1))
+        elif isKeywordConst(first):
             self.results.put(WriteElement(first, level + 1))
         elif isUnaryOp(first):
             self.results.put(WriteElement(first, level + 1))
@@ -110,15 +121,26 @@ class CompilationEngine:
         else:
             raise ValueError('invalid term.')
 
-        self.results.put(WriteElement('</term>', level))
-
     def compileExpression(self, head: int, tail: int, level: int = 0):
         '''
         Compiles an expression.
         '''
-        self.results.put(WriteElement('<expression>', level))
+        print(f'\n-------expression------------')
+        for i in range(head, tail):
+            print(self.tokenList[i])
+
+        def writeAri(ari: str):
+            if ari in ARI_DICT.keys():
+                self.writer.writeArithmetic(ARI_DICT[ari])
+            elif ari == '*':
+                self.writer.writeCall('Math.multiply', 2)
+            elif ari == '/':
+                self.writer.writeCall('Math.divide', 2)
+            else:
+                raise ValueError(f'{ari} should be an ari.')
 
         offset = 0
+        stack = []
         while head + offset < tail:
             length = 0
             current = None
@@ -127,26 +149,37 @@ class CompilationEngine:
                 current = self.tokenList[head + offset + length]
                 if isOpenParenthesis(current) or isOpenSquare(current):
                     matchCnt += 1
+                    stack.append(current.content)
                 elif isCloseParenthesis(current) or isCloseSquare(current):
                     matchCnt -= 1
+                    stack.append(current.content)
                 elif isOp(current) and matchCnt == 0 and length != 0:
                     break
                 length += 1
             self.compileTerm(
                 head + offset, head + offset + length, level + 1
             )
+            if len(stack) > 2 and stack[-1] == ')':
+                stack.pop()
+                num = 1
+                while num != 0 and len(stack) != 0:
+                    temp = stack.pop()
+                    if temp == '(':
+                        num -= 1
+                    elif temp == ')':
+                        num += 1
             if not head + offset + length == tail:
-                self.results.put(WriteElement(current, level + 1))
+                stack.append(current.content)
             offset += length + 1
+        while len(stack) != 0:
+            temp = stack.pop()
+            writeAri(temp)
 
-        self.results.put(WriteElement('</expression>', level))
-
-    def compileExpressionList(self, head: int, tail: int, level: int = 0):
+    def compileExpressionList(self, head: int, tail: int, level: int = 0) -> int:
         '''
         Compiles a (possibly empty) comma-separated list of expressions.
         '''
-        self.results.put(WriteElement('<expressionList>', level))
-
+        cnt = 0
         offset = 0
         while head + offset < tail:
             length = 0
@@ -162,8 +195,8 @@ class CompilationEngine:
             if not head+offset+length == tail:
                 self.results.put(WriteElement(current, level + 1))
             offset += length + 1
-
-        self.results.put(WriteElement('</expressionList>', level))
+            cnt += 1
+        return cnt
 
     def compileReturn(self, head: int, tail: int, level: int = 0):
         '''
@@ -174,12 +207,11 @@ class CompilationEngine:
         if not isSemicolon(semicolon):
             raise ValueError(f'{semicolon} must be ";".')
 
-        self.results.put(WriteElement('<returnStatement>', level))
-        self.results.put(WriteElement(returnKWD, level + 1))
         if tail - head != 2:
             self.compileExpression(head + 1, tail - 1, level + 1)
-        self.results.put(WriteElement(semicolon, level + 1))
-        self.results.put(WriteElement('</returnStatement>', level))
+        else:
+            self.writer.writePush('constant', 0)
+        self.writer.writeReturn()
 
     def compileDo(self, head: int, tail: int, level: int = 0):
         '''
@@ -198,10 +230,10 @@ class CompilationEngine:
                             return i
                 raise ValueError('invalid callList.')
 
-            name = self.tokenList[head]
+            name = self.tokenList[head].content
             whether = self.tokenList[head + 1]
             if isPoint(whether):
-                subName = self.tokenList[head + 2]
+                subName = self.tokenList[head + 2].content
                 openParen = self.tokenList[head + 3]
                 if not isOpenParenthesis(openParen):
                     raise ValueError(f'{openParen} should be "("')
@@ -209,30 +241,26 @@ class CompilationEngine:
                 closeParen = self.tokenList[nexId]
                 if not isCloseParenthesis(closeParen):
                     raise ValueError(f'{closeParen} shoule be ")"')
-                self.results.put(WriteElement(name, level + 1))
-                self.results.put(WriteElement(whether, level + 1))
-                self.results.put(WriteElement(subName, level + 1))
-                self.results.put(WriteElement(openParen, level + 1))
-                self.compileExpressionList(head + 4, nexId, level + 1)
-                self.results.put(WriteElement(closeParen, level + 1))
-                return
-            nextId = handleCallList(head + 2, tail)
-            closeParen = self.tokenList[nextId]
-            self.results.put(WriteElement(name, level + 1))
-            self.results.put(WriteElement(whether, level + 1))
-            self.compileExpressionList(head + 2, nextId, level + 1)
-            self.results.put(WriteElement(closeParen, level + 1))
+                nArgs = self.compileExpressionList(head + 4, nexId, level + 1)
+                funName = f'{name}.{subName}'
+                self.writer.writeCall(funName, nArgs)
+            elif isOpenParenthesis(whether):
+                nextId = handleCallList(head + 2, tail)
+                closeParen = self.tokenList[nextId]
+                if not isCloseParenthesis(closeParen):
+                    raise ValueError(f'{closeParen} shoule be ")"')
+                nArgs = self.compileExpressionList(head + 2, nextId, level + 1)
+                funName = f'{self.cName}.{name}'
+                self.writer.writeCall(funName, nArgs)
+            else:
+                raise ValueError(f'{whether} should be "("')
 
         doKWD = self.tokenList[head]
         semicolon = self.tokenList[tail - 1]
         if not isSemicolon(semicolon):
             raise ValueError(f'{semicolon} should be ";"')
 
-        self.results.put(WriteElement('<doStatement>', level))
-        self.results.put(WriteElement(doKWD, level + 1))
         handleSubroutineCall(head + 1, tail - 1)
-        self.results.put(WriteElement(semicolon, level + 1))
-        self.results.put(WriteElement('</doStatement>', level))
 
     def compileWhile(self, head: int, tail: int, level: int = 0):
         '''
@@ -502,11 +530,12 @@ class CompilationEngine:
         nextId = followedVarDec(head + 1, tail - 1)
         self.compileStatements(nextId, tail - 1, level + 1)
 
-    def compileParameterList(self, head: int, tail: int, level: int = 0):
+    def compileParameterList(self, head: int, tail: int, level: int = 0) -> int:
         '''
         Compiles a (possibly empty) parameter list.
         Does not handle the enclosing "()".
         '''
+        cnt = 0
         if head != tail:
             if tail - head < 2:
                 raise ValueError('parameter is invalid.')
@@ -534,6 +563,8 @@ class CompilationEngine:
                     self.symbalTable.define(segName, segType, 'arg')
                 offset += 1
             self.symbalTable.define(segName, segType, 'arg')
+            cnt += 1
+        return cnt
 
     def compileSubroutineDec(self, head: int, tail: int, level: int = 0):
         '''
@@ -572,7 +603,9 @@ class CompilationEngine:
             )
 
         self.symbalTable.startSubroutine()
-        self.compileParameterList(head + 4, nextId, level + 1)
+        cnt = self.compileParameterList(head + 4, nextId, level + 1)
+        fname = f'{self.cName}.{subName.content}'
+        self.writer.writeFunction(fname, cnt)
         self.compileSubroutineBody(nextId + 1, tail, level + 1)
 
     def compileClassVarDec(self, head: int, tail: int, level: int = 0):

@@ -38,12 +38,12 @@ class VMWriter:
 
     def writeCall(self, name: str, nArgs: int):
         # Writes a VM call command.
-        self.file.write(f"call {name} {nArgs}")
+        self.file.write(f"call {name} {nArgs}\n")
 
     def writeFunction(self, name: str, nLocals: int):
         # Writes a VM function command.
-        self.file.write(f'function {name} {nLocals}')
+        self.file.write(f'function {name} {nLocals}\n')
 
     def writeReturn(self):
         # Writes a VM return command.
-        self.file.write('return')
+        self.file.write('return\n')
