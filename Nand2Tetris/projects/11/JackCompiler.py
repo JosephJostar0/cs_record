@@ -30,12 +30,12 @@ class JackCompiler:
         elif self.inPath.is_dir():
             for item in self.inPath.iterdir():
                 if item.is_file() and item.suffix == '.jack':
-                    threading.Thread(target=runBoth, args=(item,))
+                    threading.Thread(target=runBoth, args=(item,)).start()
         else:
             raise ValueError(f'{self.inPath} is invalid.')
 
 
-def getJackAnalyzer():
+def getJackCompiler():
     def getPaths() -> tuple[Path, Path]:
         arguments = sys.argv
 
@@ -53,4 +53,4 @@ def getJackAnalyzer():
 
 
 if __name__ == '__main__':
-    getJackAnalyzer().runJackCompiler()
+    getJackCompiler().runJackCompiler()
