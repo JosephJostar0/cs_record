@@ -33,17 +33,13 @@ class CompilationEngine:
         self.index += 1
         return self.index - 1
 
-    def compileTerm(self, head: int, tail: int, level: int = 0):
+    def compileTerm(self, head: int, tail: int):
         '''
         Compiles a term.
         If the current token is an identifier, the routine must distinguish between a variable, an array entry, or a subroutine call.
         A single look-ahead token, which may be one of "[", "(", or ".", suffices to distinguish between the possibilities.
         Any other token is not part of this term and should not be advanced over.
         '''
-        # print('\n----------term---------------')
-        # for i in range(head, tail):
-        #     print(self.tokenList[i])
-
         def handlePoint(first: Token):
             subName = self.tokenList[head + 2]
             openParen = self.tokenList[head + 3]
@@ -60,8 +56,7 @@ class CompilationEngine:
                 kind = self.symbalTable.kindOf(first.content)
                 index = self.symbalTable.indexOf(first.content)
                 self.writer.writePush(kind, index)
-            nArgs = self.compileExpressionList(
-                head + 4, tail - 1, level + 1)
+            nArgs = self.compileExpressionList(head + 4, tail - 1)
             funName = f'{first.content}.{subName.content}'
             if not self.symbalTable.kindOf(first.content) is None:
                 nArgs += 1
@@ -79,7 +74,7 @@ class CompilationEngine:
             if not isCloseSquare(closeSquare):
                 raise ValueError(f'{closeSquare} should be "]".')
             self.writer.writePush(kind, index)
-            self.compileExpression(head + 2, tail - 1, level + 1)
+            self.compileExpression(head + 2, tail - 1)
             self.writer.writeArithmetic('add')
             # stack.top() = RAM address of arr[expression]
             self.writer.writePop('pointer', 1)
@@ -89,7 +84,7 @@ class CompilationEngine:
             closeParen = self.tokenList[tail - 1]
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
-            self.compileExpressionList(head + 2, tail - 1, level + 1)
+            self.compileExpressionList(head + 2, tail - 1)
 
         def handleKWDConst(first: Token):
             content = first.content
@@ -119,13 +114,13 @@ class CompilationEngine:
         elif isKeywordConst(first):  # 'true', 'false', 'null', 'this'
             handleKWDConst(first)
         elif isUnaryOp(first):  # - or ~
-            self.compileTerm(head + 1, tail, level + 1)
+            self.compileTerm(head + 1, tail)
             self.writer.writeArithmetic(UNARY_DICT[first.content])
         elif isOpenParenthesis(first):  # (
             closeParen = self.tokenList[tail - 1]
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
-            self.compileExpression(head + 1, tail - 1, level + 1)
+            self.compileExpression(head + 1, tail - 1)
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
                 name = first.content
@@ -147,7 +142,7 @@ class CompilationEngine:
         else:
             raise ValueError('invalid term.')
 
-    def compileExpression(self, head: int, tail: int, level: int = 0):
+    def compileExpression(self, head: int, tail: int):
         '''
         Compiles an expression.
         '''
@@ -190,7 +185,7 @@ class CompilationEngine:
                     break
                 length += 1
             self.compileTerm(
-                head + offset, head + offset + length, level + 1
+                head + offset, head + offset + length
             )
             if isOp(current):
                 stack.append(current.content)
@@ -199,7 +194,7 @@ class CompilationEngine:
             temp = stack.pop()
             writeAri(temp)
 
-    def compileExpressionList(self, head: int, tail: int, level: int = 0) -> int:
+    def compileExpressionList(self, head: int, tail: int) -> int:
         '''
         Compiles a (possibly empty) comma-separated list of expressions.
         '''
@@ -214,13 +209,13 @@ class CompilationEngine:
                     break
                 length += 1
             self.compileExpression(
-                head + offset, head + offset+length, level + 1
+                head + offset, head + offset+length
             )
             offset += length + 1
             cnt += 1
         return cnt
 
-    def compileReturn(self, head: int, tail: int, level: int = 0):
+    def compileReturn(self, head: int, tail: int):
         '''
         Compiles a return statement.
         '''
@@ -230,12 +225,12 @@ class CompilationEngine:
             raise ValueError(f'{semicolon} must be ";".')
 
         if tail - head != 2:
-            self.compileExpression(head + 1, tail - 1, level + 1)
+            self.compileExpression(head + 1, tail - 1)
         else:
             self.writer.writePush('constant', 0)
         self.writer.writeReturn()
 
-    def compileDo(self, head: int, tail: int, level: int = 0):
+    def compileDo(self, head: int, tail: int):
         '''
         Compiles a do statement.
         '''
@@ -267,7 +262,7 @@ class CompilationEngine:
                     kind = self.symbalTable.kindOf(name)
                     index = self.symbalTable.indexOf(name)
                     self.writer.writePush(kind, index)
-                nArgs = self.compileExpressionList(head + 4, nexId, level + 1)
+                nArgs = self.compileExpressionList(head + 4, nexId)
                 funName = f'{name}.{subName}'
                 if not self.symbalTable.kindOf(name) is None:
                     vType = self.symbalTable.typeOf(name)
@@ -281,7 +276,7 @@ class CompilationEngine:
                     raise ValueError(f'{closeParen} shoule be ")"')
                 if name in self.methodList:
                     self.writer.writePush('pointer', 0)
-                nArgs = self.compileExpressionList(head + 2, nextId, level + 1)
+                nArgs = self.compileExpressionList(head + 2, nextId)
                 funName = f'{self.cName}.{name}'
                 if name in self.methodList:
                     nArgs += 1
@@ -297,7 +292,7 @@ class CompilationEngine:
         handleSubroutineCall(head + 1, tail - 1)
         self.writer.writePop('temp', 0)
 
-    def compileWhile(self, head: int, tail: int, level: int = 0):
+    def compileWhile(self, head: int, tail: int):
         '''
         Compiles a while statement.
         '''
@@ -335,14 +330,14 @@ class CompilationEngine:
         label0 = f'while{self.getIndex()}'
         label1 = f'endWhile{self.getIndex()}'
         self.writer.writeLabel(label0)
-        self.compileExpression(head + 2, nextId, level + 1)
+        self.compileExpression(head + 2, nextId)
         self.writer.writeArithmetic('not')
         self.writer.writeIf(label1)
-        self.compileStatements(nextId + 2, tail - 1, level + 1)
+        self.compileStatements(nextId + 2, tail - 1)
         self.writer.writeGoto(label0)
         self.writer.writeLabel(label1)
 
-    def compileIf(self, head: int, tail: int, level: int = 0):
+    def compileIf(self, head: int, tail: int):
         '''
         Compiles an if statement, possibly with a trailing else clause.
         '''
@@ -387,7 +382,7 @@ class CompilationEngine:
             if not isCloseBrace(closeBrace):
                 raise ValueError(f'{closeBrace} should be ")".')
 
-            self.compileStatements(head + 2, tail - 1, level + 1)
+            self.compileStatements(head + 2, tail - 1)
 
         ifKWD = self.tokenList[head]
         openParen = self.tokenList[head + 1]
@@ -407,17 +402,17 @@ class CompilationEngine:
 
         label0 = f'endIf{self.getIndex()}'
         label1 = f'endElse{self.getIndex()}'
-        self.compileExpression(head + 2, nextId0, level + 1)
+        self.compileExpression(head + 2, nextId0)
         self.writer.writeArithmetic('not')
         self.writer.writeIf(label0)
-        self.compileStatements(nextId0 + 2, nextId1, level + 1)
+        self.compileStatements(nextId0 + 2, nextId1)
         self.writer.writeGoto(label1)
         self.writer.writeLabel(label0)
         if nextId1 < tail - 1:
             handleElse(nextId1 + 1, tail)
         self.writer.writeLabel(label1)
 
-    def compileLet(self, head: int, tail: int, level: int = 0):
+    def compileLet(self, head: int, tail: int):
         '''
         Compiles a let statement.
         '''
@@ -444,7 +439,7 @@ class CompilationEngine:
                 raise ValueError(f'invalid var "{kind}"')
             index = self.symbalTable.indexOf(vName)
             self.writer.writePush(kind, index)
-            self.compileExpression(head + 1, head + offset, level + 1)
+            self.compileExpression(head + 1, head + offset)
             self.writer.writeArithmetic('add')
             return head + offset + 1
 
@@ -463,7 +458,7 @@ class CompilationEngine:
         name = varName.content
         kind = self.symbalTable.kindOf(name)
         index = self.symbalTable.indexOf(name)
-        self.compileExpression(nextId + 1, tail - 1, level + 1)
+        self.compileExpression(nextId + 1, tail - 1)
         if nextId == head + 2:
             self.writer.writePop(kind, index)
         else:  # handle array
@@ -472,22 +467,22 @@ class CompilationEngine:
             self.writer.writePush('temp', 0)
             self.writer.writePop('that', 0)
 
-    def compileStatements(self, head: int, tail: int, level: int = 0):
+    def compileStatements(self, head: int, tail: int):
         '''
         Compiles a sequence of statements.
         Does not handle the enclosing "{}".
         '''
         def handleStatement(content: str, head: int, tail: int):
             if content == 'let':
-                self.compileLet(head, tail, level + 1)
+                self.compileLet(head, tail)
             elif content == 'if':
-                self.compileIf(head, tail, level + 1)
+                self.compileIf(head, tail)
             elif content == 'while':
-                self.compileWhile(head, tail, level + 1)
+                self.compileWhile(head, tail)
             elif content == 'do':
-                self.compileDo(head, tail, level + 1)
+                self.compileDo(head, tail)
             elif content == 'return':
-                self.compileReturn(head, tail, level + 1)
+                self.compileReturn(head, tail)
             else:
                 raise ValueError(f'{content} should be a statementKey')
 
@@ -512,7 +507,7 @@ class CompilationEngine:
             )
             offset += length
 
-    def compileVarDec(self, head: int, tail: int, level: int = 0):
+    def compileVarDec(self, head: int, tail: int):
         '''
         Compiles a var declaration.
         '''
@@ -540,7 +535,7 @@ class CompilationEngine:
                 if offset % 2 == 1 and not isComma(current):
                     raise ValueError(f'{current} must be a ",".')
 
-    def compileSubroutineBody(self, head: int, tail: int, level: int = 0):
+    def compileSubroutineBody(self, head: int, tail: int):
         '''
         Compiles a subroutine's body.
         '''
@@ -555,7 +550,7 @@ class CompilationEngine:
                     token = self.tokenList[head + offset + index]
                     if isSemicolon(token):
                         self.compileVarDec(
-                            head + offset, head + offset + index + 1, level + 1
+                            head + offset, head + offset + index + 1
                         )
                         offset += index + 1
                         break
@@ -572,9 +567,9 @@ class CompilationEngine:
             )
 
         nextId = followedVarDec(head + 1, tail - 1)
-        self.compileStatements(nextId, tail - 1, level + 1)
+        self.compileStatements(nextId, tail - 1)
 
-    def compileParameterList(self, head: int, tail: int, level: int = 0):
+    def compileParameterList(self, head: int, tail: int):
         '''
         Compiles a (possibly empty) parameter list.
         Does not handle the enclosing "()".
@@ -607,7 +602,7 @@ class CompilationEngine:
                 offset += 1
             self.symbalTable.define(segName, segType, 'argument')
 
-    def compileSubroutineDec(self, head: int, tail: int, level: int = 0):
+    def compileSubroutineDec(self, head: int, tail: int):
         '''
         Compiles a complete method, function, or constructor.
         '''
@@ -674,10 +669,10 @@ class CompilationEngine:
             self.writer.writePush('constant', self.cField)
             self.writer.writeCall('Memory.alloc', 1)
             self.writer.writePop('pointer', 0)
-        self.compileParameterList(head + 4, nextId, level + 1)
-        self.compileSubroutineBody(nextId + 1, tail, level + 1)
+        self.compileParameterList(head + 4, nextId)
+        self.compileSubroutineBody(nextId + 1, tail)
 
-    def compileClassVarDec(self, head: int, tail: int, level: int = 0):
+    def compileClassVarDec(self, head: int, tail: int):
         '''
         Compiles a static variable declaration, or a field declaration.
         '''
@@ -716,7 +711,7 @@ class CompilationEngine:
                 token.content, varType.content, varKWD.content
             )
 
-    def compileClass(self, head: int, tail: int, level: int = 0):
+    def compileClass(self, head: int, tail: int):
         '''
         Compiles a complete class
         '''
@@ -731,7 +726,7 @@ class CompilationEngine:
                     token = self.tokenList[head + offset + index]
                     if isSemicolon(token):
                         self.compileClassVarDec(
-                            head + offset, head + offset + index + 1, level + 1
+                            head + offset, head + offset + index + 1
                         )
                         offset += index + 1
                         break
@@ -753,7 +748,7 @@ class CompilationEngine:
                         break
                     index += 1
                 self.compileSubroutineDec(
-                    head + offset, head + offset + index, level + 1
+                    head + offset, head + offset + index
                 )
                 offset += index
             return head + offset

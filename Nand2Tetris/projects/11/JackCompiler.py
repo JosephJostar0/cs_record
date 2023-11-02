@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-
+import threading
 
 from JackTokenizer import JackTokenizer
 from CompilationEngine import CompilationEngine
@@ -18,7 +18,8 @@ class JackCompiler:
     def runJackCompiler(self):
         def runBoth(inPath: Path):
             tokenizer = JackTokenizer(inPath)
-            tokenizer.runTokenizer()
+            if not tokenizer.runTokenizer():
+                return
             compilationEngine = CompilationEngine(
                 inPath, tokenizer.results
             )
@@ -29,7 +30,7 @@ class JackCompiler:
         elif self.inPath.is_dir():
             for item in self.inPath.iterdir():
                 if item.is_file() and item.suffix == '.jack':
-                    runBoth(item)
+                    threading.Thread(target=runBoth, args=(item,))
         else:
             raise ValueError(f'{self.inPath} is invalid.')
 

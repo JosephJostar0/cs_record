@@ -138,8 +138,13 @@ class JackTokenizer:
             token = self.current.replace('\"', '')
             self.results.append(Token(token, tType))
 
-    def runTokenizer(self, isSave: bool = False):
-        self.readAndGetToken()
-        self.tokenize()
-        if isSave:
-            self.saveResult()
+    def runTokenizer(self, isSave: bool = False) -> bool:
+        try:
+            self.readAndGetToken()
+            self.tokenize()
+            if isSave:
+                self.saveResult()
+        except Exception as e:
+            print(e)
+            return False
+        return True
