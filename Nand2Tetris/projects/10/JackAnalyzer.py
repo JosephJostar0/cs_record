@@ -243,7 +243,7 @@ class CompilationEngine:
                     self.results.put(WriteElement(openParen, level + 1))
                     self.compileExpressionList(head + 4, tail - 1, level + 1)
                     self.results.put(WriteElement(closeParen, level + 1))
-                elif isOpenBrace(whether):
+                elif isOpenParenthesis(whether):
                     closeParen = self.tokenList[tail - 1]
                     if not isCloseParenthesis(closeParen):
                         raise ValueError(f'{openParen} should be ")".')

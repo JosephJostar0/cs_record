@@ -62,12 +62,54 @@ class CompilationEngine:
         # for i in range(head, tail):
         #     print(self.tokenList[i])
 
-        first = self.tokenList[head]
-        if isInteger(first):
-            self.writer.writePush('constant', first.content)
-        elif isString(first):
-            self.results.put(WriteElement(first, level + 1))
-        elif isKeywordConst(first):  # 'true', 'false', 'null', 'this'
+        def handlePoint(first: Token):
+            subName = self.tokenList[head + 2]
+            openParen = self.tokenList[head + 3]
+            closeParen = self.tokenList[tail - 1]
+            if not subName.tType == IDENTIFIER:
+                raise ValueError(
+                    f'{subName} should be an {IDENTIFIER}.'
+                )
+            if not isOpenParenthesis(openParen):
+                raise ValueError(f'{openParen} should be "(".')
+            if not isCloseParenthesis(closeParen):
+                raise ValueError(f'{openParen} should be ")".')
+            if not self.symbalTable.kindOf(first.content) is None:
+                kind = self.symbalTable.kindOf(first.content)
+                index = self.symbalTable.indexOf(first.content)
+                self.writer.writePush(kind, index)
+            nArgs = self.compileExpressionList(
+                head + 4, tail - 1, level + 1)
+            funName = f'{first.content}.{subName.content}'
+            if not self.symbalTable.kindOf(first.content) is None:
+                nArgs += 1
+                vType = self.symbalTable.typeOf(first.content)
+                funName = f'{vType}.{subName.content}'
+            self.writer.writeCall(funName, nArgs)
+
+        def handleSquare(first: Token):
+            name = first.content
+            kind = self.symbalTable.kindOf(name)
+            if kind is None:
+                raise ValueError(f'invalid var {name}.')
+            index = self.symbalTable.indexOf(name)
+            closeSquare = self.tokenList[tail - 1]
+            if not isCloseSquare(closeSquare):
+                raise ValueError(f'{closeSquare} should be "]".')
+            self.writer.writePush(kind, index)
+            self.compileExpression(head + 2, tail - 1, level + 1)
+            self.writer.writeArithmetic('add')
+            # stack.top() = RAM address of arr[expression]
+            self.writer.writePop('pointer', 1)
+            self.writer.writePush('that', 0)
+
+        def handleParen():
+            closeParen = self.tokenList[tail - 1]
+            if not isCloseParenthesis(closeParen):
+                raise ValueError(f'{closeParen} should be ")".')
+            self.compileExpressionList(head + 2, tail - 1, level + 1)
+
+        def handleKWDConst(first: Token):
             content = first.content
             if content == 'true':
                 self.writer.writePush('constant', 0)
@@ -79,19 +121,31 @@ class CompilationEngine:
             else:  # this
                 self.writer.writePush('pointer', 0)
 
-        elif isUnaryOp(first):
+        def handleString(first: Token):
+            content = first.content
+            self.writer.writePush('constant', len(content))
+            self.writer.writeCall('String.new', 1)
+            for char in content:
+                self.writer.writePush('constant', ord(char))
+                self.writer.writeCall('String.appendChar', 2)
+
+        first = self.tokenList[head]
+        if isInteger(first):
+            self.writer.writePush('constant', first.content)
+        elif isString(first):
+            handleString(first)
+        elif isKeywordConst(first):  # 'true', 'false', 'null', 'this'
+            handleKWDConst(first)
+        elif isUnaryOp(first):  # - or ~
             self.compileTerm(head + 1, tail, level + 1)
             self.writer.writeArithmetic(UNARY_DICT[first.content])
-        elif isOpenParenthesis(first):
+        elif isOpenParenthesis(first):  # (
             closeParen = self.tokenList[tail - 1]
             if not isCloseParenthesis(closeParen):
                 raise ValueError(f'{closeParen} should be ")".')
-            self.results.put(WriteElement(first, level + 1))
             self.compileExpression(head + 1, tail - 1, level + 1)
-            self.results.put(WriteElement(closeParen, level + 1))
         elif first.tType == IDENTIFIER:
             if tail - head == 1:
-                self.results.put(WriteElement(first, level + 1))
                 name = first.content
                 kind = self.symbalTable.kindOf(name)
                 if kind is None:
@@ -100,46 +154,12 @@ class CompilationEngine:
                 self.writer.writePush(kind, index)
             else:
                 whether = self.tokenList[head + 1]
-                if isOpenSquare(whether):
-                    closeSquare = self.tokenList[tail - 1]
-                    if not isCloseSquare(closeSquare):
-                        raise ValueError(f'{closeSquare} should be "]".')
-                    self.results.put(WriteElement(first, level + 1))
-                    self.results.put(WriteElement(whether, level + 1))
-                    self.compileExpression(head + 2, tail - 1, level + 1)
-                    self.results.put(WriteElement(closeSquare, level + 1))
-                elif isPoint(whether):
-                    subName = self.tokenList[head + 2]
-                    openParen = self.tokenList[head + 3]
-                    closeParen = self.tokenList[tail - 1]
-                    if not subName.tType == IDENTIFIER:
-                        raise ValueError(
-                            f'{subName} should be an {IDENTIFIER}.'
-                        )
-                    if not isOpenParenthesis(openParen):
-                        raise ValueError(f'{openParen} should be "(".')
-                    if not isCloseParenthesis(closeParen):
-                        raise ValueError(f'{openParen} should be ")".')
-                    if not self.symbalTable.kindOf(first.content) is None:
-                        kind = self.symbalTable.kindOf(first.content)
-                        index = self.symbalTable.indexOf(first.content)
-                        self.writer.writePush(kind, index)
-                    nArgs = self.compileExpressionList(
-                        head + 4, tail - 1, level + 1)
-                    funName = f'{first.content}.{subName.content}'
-                    if not self.symbalTable.kindOf(first.content) is None:
-                        nArgs += 1
-                        vType = self.symbalTable.typeOf(first.content)
-                        funName = f'{vType}.{subName.content}'
-                    self.writer.writeCall(funName, nArgs)
-                elif isOpenBrace(whether):
-                    closeParen = self.tokenList[tail - 1]
-                    if not isCloseParenthesis(closeParen):
-                        raise ValueError(f'{openParen} should be ")".')
-                    self.results.put(WriteElement(first, level + 1))
-                    self.results.put(WriteElement(whether, level + 1))
-                    self.compileExpressionList(head + 2, tail - 1, level + 1)
-                    self.results.put(WriteElement(closeParen, level + 1))
+                if isOpenSquare(whether):  # [
+                    handleSquare(first)
+                elif isPoint(whether):  # .
+                    handlePoint(first)
+                elif isOpenParenthesis(whether):  # (
+                    handleParen(first)
                 else:
                     raise ValueError('invalid term.')
         else:
@@ -183,14 +203,14 @@ class CompilationEngine:
             self.compileTerm(
                 head + offset, head + offset + length, level + 1
             )
-            if len(stack) > 1 and stack[-1] == ')':
+            if len(stack) > 1 and stack[-1] in [')', ']']:
                 stack.pop()
                 num = 1
                 while num != 0 and len(stack) != 0:
                     temp = stack.pop()
-                    if temp == '(':
+                    if temp in ['(', '[']:
                         num -= 1
-                    elif temp == ')':
+                    elif temp == [')', ']']:
                         num += 1
             if not head + offset + length == tail:
                 stack.append(current.content)
@@ -423,7 +443,7 @@ class CompilationEngine:
         '''
         Compiles a let statement.
         '''
-        def handleLetExpression(head: int, tail: int) -> int:
+        def handleLetExpression(head: int, tail: int, var: Token) -> int:
             openSquare = self.tokenList[head]
             if not isOpenSquare(openSquare):
                 return head
@@ -440,7 +460,14 @@ class CompilationEngine:
                 offset += 1
             if head + offset == tail:
                 raise ValueError('invalid letExpression.')
+            vName = var.content
+            kind = self.symbalTable.kindOf(vName)
+            if kind is None:
+                raise ValueError(f'invalid var "{kind}"')
+            index = self.symbalTable.indexOf(vName)
+            self.writer.writePush(kind, index)
             self.compileExpression(head + 1, head + offset, level + 1)
+            self.writer.writeArithmetic('add')
             return head + offset + 1
 
         letKWD = self.tokenList[head]
@@ -450,17 +477,22 @@ class CompilationEngine:
             raise ValueError(f'{varName} should be an {IDENTIFIER}.')
         if not isSemicolon(semicolon):
             raise ValueError(f'{semicolon} should be a ";".')
-        nextId = handleLetExpression(head + 2, tail)
+        nextId = handleLetExpression(head + 2, tail, varName)
         equal = self.tokenList[nextId]
         if not isEqual(equal):
             raise ValueError(f'{equal} should be a "=".')
 
         name = varName.content
-        # vType = self.symbalTable.typeOf(name)
         kind = self.symbalTable.kindOf(name)
         index = self.symbalTable.indexOf(name)
         self.compileExpression(nextId + 1, tail - 1, level + 1)
-        self.writer.writePop(kind, index)
+        if nextId == head + 2:
+            self.writer.writePop(kind, index)
+        else:  # handle array
+            self.writer.writePop('temp', 0)
+            self.writer.writePop('pointer', 1)
+            self.writer.writePush('temp', 0)
+            self.writer.writePop('that', 0)
 
     def compileStatements(self, head: int, tail: int, level: int = 0):
         '''
@@ -617,7 +649,7 @@ class CompilationEngine:
                 current = self.tokenList[head + offset]
                 if current.content != 'var' or current.tType != KEYWORD:
                     break
-                length = 0
+                length = 2
                 while head + offset + length < tail:
                     current = self.tokenList[head + offset + length]
                     if current.tType == IDENTIFIER:
