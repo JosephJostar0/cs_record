@@ -1,1128 +1,321 @@
-      <statements>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> Screen </identifier>
-          <symbol> . </symbol>
-          <identifier> clearScreen </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> batWidth </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <integerConstant> 50 </integerConstant>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> bat </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <identifier> Bat </identifier>
-              <symbol> . </symbol>
-              <identifier> new </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <integerConstant> 230 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 229 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <identifier> batWidth </identifier>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 7 </integerConstant>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> ball </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <identifier> Ball </identifier>
-              <symbol> . </symbol>
-              <identifier> new </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <integerConstant> 253 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 222 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 0 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 511 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 0 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 229 </integerConstant>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> ball </identifier>
-          <symbol> . </symbol>
-          <identifier> setDestination </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-            <expression>
-              <term>
-                <integerConstant> 400 </integerConstant>
-              </term>
-            </expression>
-            <symbol> , </symbol>
-            <expression>
-              <term>
-                <integerConstant> 0 </integerConstant>
-              </term>
-            </expression>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> Screen </identifier>
-          <symbol> . </symbol>
-          <identifier> drawRectangle </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-            <expression>
-              <term>
-                <integerConstant> 0 </integerConstant>
-              </term>
-            </expression>
-            <symbol> , </symbol>
-            <expression>
-              <term>
-                <integerConstant> 238 </integerConstant>
-              </term>
-            </expression>
-            <symbol> , </symbol>
-            <expression>
-              <term>
-                <integerConstant> 511 </integerConstant>
-              </term>
-            </expression>
-            <symbol> , </symbol>
-            <expression>
-              <term>
-                <integerConstant> 240 </integerConstant>
-              </term>
-            </expression>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> Output </identifier>
-          <symbol> . </symbol>
-          <identifier> moveCursor </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-            <expression>
-              <term>
-                <integerConstant> 22 </integerConstant>
-              </term>
-            </expression>
-            <symbol> , </symbol>
-            <expression>
-              <term>
-                <integerConstant> 0 </integerConstant>
-              </term>
-            </expression>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> Output </identifier>
-          <symbol> . </symbol>
-          <identifier> printString </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-            <expression>
-              <term>
-                <stringConstant> Score: 0 </stringConstant>
-              </term>
-            </expression>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> exit </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <keyword> false </keyword>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> score </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <integerConstant> 0 </integerConstant>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> wall </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <integerConstant> 0 </integerConstant>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> lastWall </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <integerConstant> 0 </integerConstant>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-          <expression>
-            <term>
-              <keyword> this </keyword>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <statements>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> bat </identifier>
-          <symbol> . </symbol>
-          <identifier> dispose </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> ball </identifier>
-          <symbol> . </symbol>
-          <identifier> dispose </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <doStatement>
-          <keyword> do </keyword>
-          <identifier> Memory </identifier>
-          <symbol> . </symbol>
-          <identifier> deAlloc </identifier>
-          <symbol> ( </symbol>
-          <expressionList>
-            <expression>
-              <term>
-                <keyword> this </keyword>
-              </term>
-            </expression>
-          </expressionList>
-          <symbol> ) </symbol>
-          <symbol> ; </symbol>
-        </doStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <statements>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> instance </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <identifier> PongGame </identifier>
-              <symbol> . </symbol>
-              <identifier> new </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-              </expressionList>
-              <symbol> ) </symbol>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <statements>
-        <returnStatement>
-          <keyword> return </keyword>
-          <expression>
-            <term>
-              <identifier> instance </identifier>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <statements>
-        <whileStatement>
-          <keyword> while </keyword>
-          <symbol> ( </symbol>
-          <expression>
-            <term>
-              <symbol> ~ </symbol>
-              <term>
-                <identifier> exit </identifier>
-              </term>
-            </term>
-          </expression>
-          <symbol> ) </symbol>
-          <symbol> { </symbol>
-          <statements>
-            <whileStatement>
-              <keyword> while </keyword>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <identifier> key </identifier>
-                    </term>
-                    <symbol> = </symbol>
-                    <term>
-                      <integerConstant> 0 </integerConstant>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-                <symbol> &amp; </symbol>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ~ </symbol>
-                      <term>
-                        <identifier> exit </identifier>
-                      </term>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-              <symbol> { </symbol>
-              <statements>
-                <letStatement>
-                  <keyword> let </keyword>
-                  <identifier> key </identifier>
-                  <symbol> = </symbol>
-                  <expression>
-                    <term>
-                      <identifier> Keyboard </identifier>
-                      <symbol> . </symbol>
-                      <identifier> keyPressed </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                    </term>
-                  </expression>
-                  <symbol> ; </symbol>
-                </letStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> bat </identifier>
-                  <symbol> . </symbol>
-                  <identifier> move </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> moveBall </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> Sys </identifier>
-                  <symbol> . </symbol>
-                  <identifier> wait </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                    <expression>
-                      <term>
-                        <integerConstant> 50 </integerConstant>
-                      </term>
-                    </expression>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-              </statements>
-              <symbol> } </symbol>
-            </whileStatement>
-            <ifStatement>
-              <keyword> if </keyword>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <identifier> key </identifier>
-                </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 130 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-              <symbol> { </symbol>
-              <statements>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> bat </identifier>
-                  <symbol> . </symbol>
-                  <identifier> setDirection </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                    <expression>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
-                      </term>
-                    </expression>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-              </statements>
-              <symbol> } </symbol>
-              <keyword> else </keyword>
-              <symbol> { </symbol>
-              <statements>
-                <ifStatement>
-                  <keyword> if </keyword>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <identifier> key </identifier>
-                    </term>
-                    <symbol> = </symbol>
-                    <term>
-                      <integerConstant> 132 </integerConstant>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                  <symbol> { </symbol>
-                  <statements>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> bat </identifier>
-                      <symbol> . </symbol>
-                      <identifier> setDirection </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <integerConstant> 2 </integerConstant>
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-                    </doStatement>
-                  </statements>
-                  <symbol> } </symbol>
-                  <keyword> else </keyword>
-                  <symbol> { </symbol>
-                  <statements>
-                    <ifStatement>
-                      <keyword> if </keyword>
-                      <symbol> ( </symbol>
-                      <expression>
-                        <term>
-                          <identifier> key </identifier>
-                        </term>
-                        <symbol> = </symbol>
-                        <term>
-                          <integerConstant> 140 </integerConstant>
-                        </term>
-                      </expression>
-                      <symbol> ) </symbol>
-                      <symbol> { </symbol>
-                      <statements>
-                        <letStatement>
-                          <keyword> let </keyword>
-                          <identifier> exit </identifier>
-                          <symbol> = </symbol>
-                          <expression>
-                            <term>
-                              <keyword> true </keyword>
-                            </term>
-                          </expression>
-                          <symbol> ; </symbol>
-                        </letStatement>
-                      </statements>
-                      <symbol> } </symbol>
-                    </ifStatement>
-                  </statements>
-                  <symbol> } </symbol>
-                </ifStatement>
-              </statements>
-              <symbol> } </symbol>
-            </ifStatement>
-            <whileStatement>
-              <keyword> while </keyword>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ~ </symbol>
-                      <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <identifier> key </identifier>
-                          </term>
-                          <symbol> = </symbol>
-                          <term>
-                            <integerConstant> 0 </integerConstant>
-                          </term>
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-                <symbol> &amp; </symbol>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ~ </symbol>
-                      <term>
-                        <identifier> exit </identifier>
-                      </term>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-              <symbol> { </symbol>
-              <statements>
-                <letStatement>
-                  <keyword> let </keyword>
-                  <identifier> key </identifier>
-                  <symbol> = </symbol>
-                  <expression>
-                    <term>
-                      <identifier> Keyboard </identifier>
-                      <symbol> . </symbol>
-                      <identifier> keyPressed </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                    </term>
-                  </expression>
-                  <symbol> ; </symbol>
-                </letStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> bat </identifier>
-                  <symbol> . </symbol>
-                  <identifier> move </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> moveBall </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-                <doStatement>
-                  <keyword> do </keyword>
-                  <identifier> Sys </identifier>
-                  <symbol> . </symbol>
-                  <identifier> wait </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                    <expression>
-                      <term>
-                        <integerConstant> 50 </integerConstant>
-                      </term>
-                    </expression>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                  <symbol> ; </symbol>
-                </doStatement>
-              </statements>
-              <symbol> } </symbol>
-            </whileStatement>
-          </statements>
-          <symbol> } </symbol>
-        </whileStatement>
-        <ifStatement>
-          <keyword> if </keyword>
-          <symbol> ( </symbol>
-          <expression>
-            <term>
-              <identifier> exit </identifier>
-            </term>
-          </expression>
-          <symbol> ) </symbol>
-          <symbol> { </symbol>
-          <statements>
-            <doStatement>
-              <keyword> do </keyword>
-              <identifier> Output </identifier>
-              <symbol> . </symbol>
-              <identifier> moveCursor </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <integerConstant> 10 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 27 </integerConstant>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-              <symbol> ; </symbol>
-            </doStatement>
-            <doStatement>
-              <keyword> do </keyword>
-              <identifier> Output </identifier>
-              <symbol> . </symbol>
-              <identifier> printString </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <stringConstant> Game Over </stringConstant>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-              <symbol> ; </symbol>
-            </doStatement>
-          </statements>
-          <symbol> } </symbol>
-        </ifStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
-      <statements>
-        <letStatement>
-          <keyword> let </keyword>
-          <identifier> wall </identifier>
-          <symbol> = </symbol>
-          <expression>
-            <term>
-              <identifier> ball </identifier>
-              <symbol> . </symbol>
-              <identifier> move </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-              </expressionList>
-              <symbol> ) </symbol>
-            </term>
-          </expression>
-          <symbol> ; </symbol>
-        </letStatement>
-        <ifStatement>
-          <keyword> if </keyword>
-          <symbol> ( </symbol>
-          <expression>
-            <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <identifier> wall </identifier>
-                </term>
-                <symbol> &gt; </symbol>
-                <term>
-                  <integerConstant> 0 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-            </term>
-            <symbol> &amp; </symbol>
-            <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ~ </symbol>
-                  <term>
-                    <symbol> ( </symbol>
-                    <expression>
-                      <term>
-                        <identifier> wall </identifier>
-                      </term>
-                      <symbol> = </symbol>
-                      <term>
-                        <identifier> lastWall </identifier>
-                      </term>
-                    </expression>
-                    <symbol> ) </symbol>
-                  </term>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-            </term>
-          </expression>
-          <symbol> ) </symbol>
-          <symbol> { </symbol>
-          <statements>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> lastWall </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> wall </identifier>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> bouncingDirection </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <integerConstant> 0 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> batLeft </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> bat </identifier>
-                  <symbol> . </symbol>
-                  <identifier> getLeft </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> batRight </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> bat </identifier>
-                  <symbol> . </symbol>
-                  <identifier> getRight </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> ballLeft </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> ball </identifier>
-                  <symbol> . </symbol>
-                  <identifier> getLeft </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <letStatement>
-              <keyword> let </keyword>
-              <identifier> ballRight </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> ball </identifier>
-                  <symbol> . </symbol>
-                  <identifier> getRight </identifier>
-                  <symbol> ( </symbol>
-                  <expressionList>
-                  </expressionList>
-                  <symbol> ) </symbol>
-                </term>
-              </expression>
-              <symbol> ; </symbol>
-            </letStatement>
-            <ifStatement>
-              <keyword> if </keyword>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <identifier> wall </identifier>
-                </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 4 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-              <symbol> { </symbol>
-              <statements>
-                <letStatement>
-                  <keyword> let </keyword>
-                  <identifier> exit </identifier>
-                  <symbol> = </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ( </symbol>
-                      <expression>
-                        <term>
-                          <identifier> batLeft </identifier>
-                        </term>
-                        <symbol> &gt; </symbol>
-                        <term>
-                          <identifier> ballRight </identifier>
-                        </term>
-                      </expression>
-                      <symbol> ) </symbol>
-                    </term>
-                    <symbol> | </symbol>
-                    <term>
-                      <symbol> ( </symbol>
-                      <expression>
-                        <term>
-                          <identifier> batRight </identifier>
-                        </term>
-                        <symbol> &lt; </symbol>
-                        <term>
-                          <identifier> ballLeft </identifier>
-                        </term>
-                      </expression>
-                      <symbol> ) </symbol>
-                    </term>
-                  </expression>
-                  <symbol> ; </symbol>
-                </letStatement>
-                <ifStatement>
-                  <keyword> if </keyword>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <symbol> ~ </symbol>
-                      <term>
-                        <identifier> exit </identifier>
-                      </term>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                  <symbol> { </symbol>
-                  <statements>
-                    <ifStatement>
-                      <keyword> if </keyword>
-                      <symbol> ( </symbol>
-                      <expression>
-                        <term>
-                          <identifier> ballRight </identifier>
-                        </term>
-                        <symbol> &lt; </symbol>
-                        <term>
-                          <symbol> ( </symbol>
-                          <expression>
-                            <term>
-                              <identifier> batLeft </identifier>
-                            </term>
-                            <symbol> + </symbol>
-                            <term>
-                              <integerConstant> 10 </integerConstant>
-                            </term>
-                          </expression>
-                          <symbol> ) </symbol>
-                        </term>
-                      </expression>
-                      <symbol> ) </symbol>
-                      <symbol> { </symbol>
-                      <statements>
-                        <letStatement>
-                          <keyword> let </keyword>
-                          <identifier> bouncingDirection </identifier>
-                          <symbol> = </symbol>
-                          <expression>
-                            <term>
-                              <symbol> - </symbol>
-                              <term>
-                                <integerConstant> 1 </integerConstant>
-                              </term>
-                            </term>
-                          </expression>
-                          <symbol> ; </symbol>
-                        </letStatement>
-                      </statements>
-                      <symbol> } </symbol>
-                      <keyword> else </keyword>
-                      <symbol> { </symbol>
-                      <statements>
-                        <ifStatement>
-                          <keyword> if </keyword>
-                          <symbol> ( </symbol>
-                          <expression>
-                            <term>
-                              <identifier> ballLeft </identifier>
-                            </term>
-                            <symbol> &gt; </symbol>
-                            <term>
-                              <symbol> ( </symbol>
-                              <expression>
-                                <term>
-                                  <identifier> batRight </identifier>
-                                </term>
-                                <symbol> - </symbol>
-                                <term>
-                                  <integerConstant> 10 </integerConstant>
-                                </term>
-                              </expression>
-                              <symbol> ) </symbol>
-                            </term>
-                          </expression>
-                          <symbol> ) </symbol>
-                          <symbol> { </symbol>
-                          <statements>
-                            <letStatement>
-                              <keyword> let </keyword>
-                              <identifier> bouncingDirection </identifier>
-                              <symbol> = </symbol>
-                              <expression>
-                                <term>
-                                  <integerConstant> 1 </integerConstant>
-                                </term>
-                              </expression>
-                              <symbol> ; </symbol>
-                            </letStatement>
-                          </statements>
-                          <symbol> } </symbol>
-                        </ifStatement>
-                      </statements>
-                      <symbol> } </symbol>
-                    </ifStatement>
-                    <letStatement>
-                      <keyword> let </keyword>
-                      <identifier> batWidth </identifier>
-                      <symbol> = </symbol>
-                      <expression>
-                        <term>
-                          <identifier> batWidth </identifier>
-                        </term>
-                        <symbol> - </symbol>
-                        <term>
-                          <integerConstant> 2 </integerConstant>
-                        </term>
-                      </expression>
-                      <symbol> ; </symbol>
-                    </letStatement>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> bat </identifier>
-                      <symbol> . </symbol>
-                      <identifier> setWidth </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <identifier> batWidth </identifier>
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-                    </doStatement>
-                    <letStatement>
-                      <keyword> let </keyword>
-                      <identifier> score </identifier>
-                      <symbol> = </symbol>
-                      <expression>
-                        <term>
-                          <identifier> score </identifier>
-                        </term>
-                        <symbol> + </symbol>
-                        <term>
-                          <integerConstant> 1 </integerConstant>
-                        </term>
-                      </expression>
-                      <symbol> ; </symbol>
-                    </letStatement>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> Output </identifier>
-                      <symbol> . </symbol>
-                      <identifier> moveCursor </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <integerConstant> 22 </integerConstant>
-                          </term>
-                        </expression>
-                        <symbol> , </symbol>
-                        <expression>
-                          <term>
-                            <integerConstant> 7 </integerConstant>
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-                    </doStatement>
-                    <doStatement>
-                      <keyword> do </keyword>
-                      <identifier> Output </identifier>
-                      <symbol> . </symbol>
-                      <identifier> printInt </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                        <expression>
-                          <term>
-                            <identifier> score </identifier>
-                          </term>
-                        </expression>
-                      </expressionList>
-                      <symbol> ) </symbol>
-                      <symbol> ; </symbol>
-                    </doStatement>
-                  </statements>
-                  <symbol> } </symbol>
-                </ifStatement>
-              </statements>
-              <symbol> } </symbol>
-            </ifStatement>
-            <doStatement>
-              <keyword> do </keyword>
-              <identifier> ball </identifier>
-              <symbol> . </symbol>
-              <identifier> bounce </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <identifier> bouncingDirection </identifier>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
-              <symbol> ; </symbol>
-            </doStatement>
-          </statements>
-          <symbol> } </symbol>
-        </ifStatement>
-        <returnStatement>
-          <keyword> return </keyword>
-          <symbol> ; </symbol>
-        </returnStatement>
-      </statements>
+function PongGame.new 0
+push constant 7
+call Memory.alloc 1
+pop pointer 0
+call Screen.clearScreen 0
+pop temp 0
+push constant 50
+pop this 6
+push constant 230
+push constant 229
+push this 6
+push constant 7
+call Bat.new 4
+pop this 0
+push constant 253
+push constant 222
+push constant 0
+push constant 511
+push constant 0
+push constant 229
+call Ball.new 6
+pop this 1
+push this 1
+push constant 400
+push constant 0
+call Ball.setDestination 3
+pop temp 0
+push constant 0
+push constant 238
+push constant 511
+push constant 240
+call Screen.drawRectangle 4
+pop temp 0
+push constant 22
+push constant 0
+call Output.moveCursor 2
+pop temp 0
+push constant 8
+call String.new 1
+push constant 83
+call String.appendChar 2
+push constant 99
+call String.appendChar 2
+push constant 111
+call String.appendChar 2
+push constant 114
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 58
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 48
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push constant 0
+pop this 3
+push constant 0
+pop this 4
+push constant 0
+pop this 2
+push constant 0
+pop this 5
+push pointer 0
+return
+function PongGame.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Bat.dispose 1
+pop temp 0
+push this 1
+call Ball.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function PongGame.newInstance 0
+call PongGame.new 0
+pop static 0
+push constant 0
+return
+function PongGame.getInstance 0
+push static 0
+return
+function PongGame.run 1
+push argument 0
+pop pointer 0
+label while0
+push this 3
+not
+not
+if-goto endWhile1
+label while2
+push local 0
+push constant 0
+eq
+push this 3
+not
+and
+not
+if-goto endWhile3
+call Keyboard.keyPressed 0
+pop local 0
+push this 0
+call Bat.move 1
+pop temp 0
+push pointer 0
+call PongGame.moveBall 1
+pop temp 0
+push constant 50
+call Sys.wait 1
+pop temp 0
+goto while2
+label endWhile3
+push local 0
+push constant 130
+eq
+not
+if-goto endIf4
+push this 0
+push constant 1
+call Bat.setDirection 2
+pop temp 0
+goto endElse5
+label endIf4
+push local 0
+push constant 132
+eq
+not
+if-goto endIf6
+push this 0
+push constant 2
+call Bat.setDirection 2
+pop temp 0
+goto endElse7
+label endIf6
+push local 0
+push constant 140
+eq
+not
+if-goto endIf8
+push constant 0
+not
+pop this 3
+goto endElse9
+label endIf8
+label endElse9
+label endElse7
+label endElse5
+label while10
+push local 0
+push constant 0
+eq
+not
+push this 3
+not
+and
+not
+if-goto endWhile11
+call Keyboard.keyPressed 0
+pop local 0
+push this 0
+call Bat.move 1
+pop temp 0
+push pointer 0
+call PongGame.moveBall 1
+pop temp 0
+push constant 50
+call Sys.wait 1
+pop temp 0
+goto while10
+label endWhile11
+goto while0
+label endWhile1
+push this 3
+not
+if-goto endIf12
+push constant 10
+push constant 27
+call Output.moveCursor 2
+pop temp 0
+push constant 9
+call String.new 1
+push constant 71
+call String.appendChar 2
+push constant 97
+call String.appendChar 2
+push constant 109
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 118
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 114
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+goto endElse13
+label endIf12
+label endElse13
+push constant 0
+return
+function PongGame.moveBall 5
+push argument 0
+pop pointer 0
+push this 1
+call Ball.move 1
+pop this 2
+push this 2
+push constant 0
+gt
+push this 2
+push this 5
+eq
+not
+and
+not
+if-goto endIf14
+push this 2
+pop this 5
+push constant 0
+pop local 0
+push this 0
+call Bat.getLeft 1
+pop local 1
+push this 0
+call Bat.getRight 1
+pop local 2
+push this 1
+call Ball.getLeft 1
+pop local 3
+push this 1
+call Ball.getRight 1
+pop local 4
+push this 2
+push constant 4
+eq
+not
+if-goto endIf16
+push local 1
+push local 4
+gt
+push local 2
+push local 3
+lt
+or
+pop this 3
+push this 3
+not
+not
+if-goto endIf18
+push local 4
+push local 1
+push constant 10
+add
+lt
+not
+if-goto endIf20
+push constant 1
+neg
+pop local 0
+goto endElse21
+label endIf20
+push local 3
+push local 2
+push constant 10
+sub
+gt
+not
+if-goto endIf22
+push constant 1
+pop local 0
+goto endElse23
+label endIf22
+label endElse23
+label endElse21
+push this 6
+push constant 2
+sub
+pop this 6
+push this 0
+push this 6
+call Bat.setWidth 2
+pop temp 0
+push this 4
+push constant 1
+add
+pop this 4
+push constant 22
+push constant 7
+call Output.moveCursor 2
+pop temp 0
+push this 4
+call Output.printInt 1
+pop temp 0
+goto endElse19
+label endIf18
+label endElse19
+goto endElse17
+label endIf16
+label endElse17
+push this 1
+push local 0
+call Ball.bounce 2
+pop temp 0
+goto endElse15
+label endIf14
+label endElse15
+push constant 0
+return

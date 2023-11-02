@@ -1,20 +1,9 @@
 from pathlib import Path
 from queue import Queue
-import threading
 
 from CompilerTools import *
 from SymbolTable import SymbolTable
 from VMWriter import VMWriter
-
-
-class WriteElement:
-    def __init__(self, content, level: int):
-        self.content = content
-        self.level = level
-
-    def __str__(self) -> str:
-        return '  ' * self.level + str(self.content)
-        # return ''
 
 
 class CompilationEngine:
@@ -39,13 +28,6 @@ class CompilationEngine:
             raise FileExistsError(f"{inPath} isn't a file")
         else:
             raise FileNotFoundError(f"File/Dir '{inPath}' does not exist.")
-
-    def writeResult(self):
-        open(self.outPath, 'w', encoding=ENCODE).close()
-        while not (self.end and self.results.empty()):
-            element: WriteElement = self.results.get()
-            with open(self.outPath, 'a', encoding=ENCODE) as file:
-                file.write(str(element) + '\n')
 
     def getIndex(self):
         self.index += 1
@@ -234,8 +216,6 @@ class CompilationEngine:
             self.compileExpression(
                 head + offset, head + offset+length, level + 1
             )
-            if not head+offset+length == tail:
-                self.results.put(WriteElement(current, level + 1))
             offset += length + 1
             cnt += 1
         return cnt
@@ -808,7 +788,6 @@ class CompilationEngine:
         handleSubroutineDec(nextId, tail - 1)
 
     def runCompilationEngine(self):
-        # self.compileClass(0, self.total)
         try:
             self.writer = VMWriter(self.outPath)
             self.compileClass(0, self.total)

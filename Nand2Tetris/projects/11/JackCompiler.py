@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from CompilerTools import *
+
 from JackTokenizer import JackTokenizer
 from CompilationEngine import CompilationEngine
 
@@ -15,12 +15,13 @@ class JackCompiler:
             raise FileExistsError(f'{inPath} is not a valid file/dir')
         self.inPath = inPath
 
-    def runJackAnalyzer(self, isSave: bool = False):
+    def runJackCompiler(self):
         def runBoth(inPath: Path):
             tokenizer = JackTokenizer(inPath)
             tokenizer.runTokenizer()
             compilationEngine = CompilationEngine(
-                inPath, tokenizer.results, isSave)
+                inPath, tokenizer.results
+            )
             compilationEngine.runCompilationEngine()
 
         if self.inPath.is_file():
@@ -51,4 +52,4 @@ def getJackAnalyzer():
 
 
 if __name__ == '__main__':
-    getJackAnalyzer().runJackAnalyzer(False)
+    getJackAnalyzer().runJackCompiler()
