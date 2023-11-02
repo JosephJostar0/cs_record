@@ -169,10 +169,6 @@ class CompilationEngine:
         '''
         Compiles an expression.
         '''
-        # print(f'\n-------expression------------')
-        # for i in range(head, tail):
-        #     print(self.tokenList[i])
-
         def writeAri(ari: str):
             if ari in ARI_DICT.keys():
                 self.writer.writeArithmetic(ARI_DICT[ari])
@@ -197,22 +193,24 @@ class CompilationEngine:
                 elif isCloseParenthesis(current) or isCloseSquare(current):
                     matchCnt -= 1
                     stack.append(current.content)
+                    while len(stack) > 0 and stack[-1] in [')', ']']:
+                        stack.pop()
+                        num = 1
+                        while num != 0 and len(stack) != 0:
+                            temp = stack.pop()
+                            if temp in ['(', '[']:
+                                num -= 1
+                            elif temp == [')', ']']:
+                                num += 1
+                        if num != 0:
+                            raise ValueError("'()' or '[]' doesn't match.")
                 elif isOp(current) and matchCnt == 0 and length != 0:
                     break
                 length += 1
             self.compileTerm(
                 head + offset, head + offset + length, level + 1
             )
-            if len(stack) > 1 and stack[-1] in [')', ']']:
-                stack.pop()
-                num = 1
-                while num != 0 and len(stack) != 0:
-                    temp = stack.pop()
-                    if temp in ['(', '[']:
-                        num -= 1
-                    elif temp == [')', ']']:
-                        num += 1
-            if not head + offset + length == tail:
+            if isOp(current):
                 stack.append(current.content)
             offset += length + 1
         while len(stack) != 0:
