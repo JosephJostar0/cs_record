@@ -34,8 +34,11 @@ class Math {
     
     function boolean bit(int x, int i) {
         var int index, num, temp;
-        let index = 15;
-        let num = x;
+        if (i = 15) {
+            return (x < 0);
+        }
+        let index = 14;
+        let num = Math.abs(x);
         while (index > i) {
             let temp = twoToThe[index];
             if ((num > temp) | (num = temp)) {
@@ -44,13 +47,13 @@ class Math {
             let index = index - 1;
         }
         let temp = twoToThe[index];
-        return (num > temp) | (num = temp);
+        return ((num > temp) | (num = temp));
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
         if (x < 0) {
-            return -x;
+            return (-x);
         }
         return x;
     }
@@ -63,12 +66,15 @@ class Math {
     function int multiply(int x, int y) {
         var int sum, shiftedX, i;
         let shiftedX = x;
-        while (i < 16) {
+        while (i < 15) {
             if(Math.bit(y, i)) {
                 let sum = sum + shiftedX;
             }
             let shiftedX = shiftedX + shiftedX;
             let i = i + 1;
+        }
+        if (y < 0) {
+            return -sum;
         }
         return sum;
     }
@@ -85,34 +91,44 @@ class Math {
         let signY = Math.bit(y, 15);
         let absX = Math.abs(x);
         let absY = Math.abs(y);
-        if (absY > absX) {
+        if ((absY > absX) | (y = -32767)) {
             return 0;
         }
+        
         if ((absY * 2) < 0) {
             let q = 0;
         }
         else {
-            let q = Math.divide(x, absY * 2);
+            let q = Math.divide(absX, (absY * 2));
         }
-        if (x - (2 * q * y) < y) {
-            return 2 * q;
+        
+        if ((absX - (2 * q * absY)) < absY) {
+            if (signX = signY) {
+                return (2 * q);
+            }
+            return -2 * q;
         }
-        return (2 * q) + 1;
+        if (signX = signY) {
+            return ((2 * q) + 1);
+        }
+        return -((2 * q) + 1);
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-        var int y, j, temp;
+        var int y, j, temp, current;
         let j = 15;
-        while (~Math.bit(x, j)) {
+        while ((~(j < 0)) & (~Math.bit(x, j))) {
             let j = j - 1;
         }
         let j = (j + 1) / 2;
         while (~(j < 0)) {
             let temp = y + twoToThe[j];
-            if ((temp > 0) & ((temp < x) | (temp = x))) {
+            let current = temp * temp;
+            if ((current > 0) & ((current < x) | (current = x))) {
                 let y = temp;
             }
+            let j = j - 1;
         }
         return y;
     }
