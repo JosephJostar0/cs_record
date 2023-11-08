@@ -11,9 +11,11 @@
  */
 class Screen {
     static boolean color;
+    static Array screen;
     /** Initializes the Screen. */
     function void init() {
         let color = false;
+        let screen = 16384;
         return;
     }
 
@@ -21,6 +23,7 @@ class Screen {
     function void clearScreen() {
         let color = false;
         do Screen.drawRectangle(0, 0, 511, 255);
+        return;
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
@@ -41,9 +44,9 @@ class Screen {
                 let value = -value;
             } else {
                 if(color) {
-                    let value = value + twoToThe[index];
+                    let value = value + Math.twoToThe[index];
                 } else {
-                    let value = value - twoToThe[index];
+                    let value = value - Math.twoToThe[index];
                 }
             }
         }
@@ -53,14 +56,17 @@ class Screen {
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        return;
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        return;
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
+        return;
     }
 }

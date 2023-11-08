@@ -28,26 +28,12 @@ class Math {
         let twoToThe[12] = 4096;
         let twoToThe[13] = 8192;
         let twoToThe[14] = 16384;
-        let twoToThe[15] = twoToThe[14] + twoToThe[14];
+        let twoToThe[15] = 16384 + 16384;
         return;
     }
     
     function boolean bit(int x, int i) {
-        var int index, num, temp;
-        if (i = 15) {
-            return (x < 0);
-        }
-        let index = 14;
-        let num = Math.abs(x);
-        while (index > i) {
-            let temp = twoToThe[index];
-            if ((num > temp) | (num = temp)) {
-                let num = num - twoToThe[index];
-            }
-            let index = index - 1;
-        }
-        let temp = twoToThe[index];
-        return ((num > temp) | (num = temp));
+        return (x & twoToThe[i]);
     }
 
     /** Returns the absolute value of x. */
