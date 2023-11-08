@@ -63,9 +63,28 @@ class Screen {
         let dx = x2 - x1;
         let dy = y2 - y1;
         let absDy = Math.abs(dy);
+        if (dy = 0) {
+            while (~(a > dx)) {
+                do Screen.drawPixel(x1 + a, y1 + b);
+                let a = a + 1;
+            }
+            return;
+        }
+        if (dx = 0) {
+            while (~(absB > absDy)) {
+                do Screen.drawPixel(x1 + a, y1 + b);
+                let absB = absB + 1;
+                if (dy < 0) {
+                    let b = b - 1;
+                } else {
+                    let b = b + 1;
+                }
+            }
+            return;
+        }
         while ((~(a > dx)) & (~(absB > absDy))) {
             do Screen.drawPixel(x1 + a, y1 + b);
-            if (((diff < 0) & (dx > 0)) | (dy = 0)) {
+            if (diff < 0) {
                 let a = a + 1;
                 let diff = diff + absDy;
             } else {
@@ -96,6 +115,14 @@ class Screen {
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
-        
+        var int dy, x1, y1, temp;
+        let dy = -r;
+        while (~(dy > r)) {
+            let temp = Math.sqrt((r * r) - (dy * dy));
+            let y1 = y + dy;
+            do Screen.drawLine(x - temp, y1, x + temp, y1);
+            let dy = dy + 1;
+        }
+        return;
     }
 }

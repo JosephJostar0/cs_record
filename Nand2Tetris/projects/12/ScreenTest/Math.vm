@@ -302,12 +302,11 @@ label WHILE_EXP0
 push local 1
 push constant 0
 lt
-not
 push argument 0
 push local 1
 call Math.bit 2
+or
 not
-and
 not
 if-goto WHILE_END0
 push local 1
