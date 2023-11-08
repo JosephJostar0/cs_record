@@ -32,20 +32,15 @@ class Screen {
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
-        var int addr, value, index, num, i;
+        var int addr, value, index, mask;
         let addr = (32 * y) + (x / 16);
         let value = Memory.peek(16384 + addr);
-        let index = x - ((x / 16) * 16);
-        if (~(Math.bit(value, x) = color)) {
-            if (index = 15) {
-                let value = -value;
-            } else {
-                if(color) {
-                    let value = value + twoToThe[index];
-                } else {
-                    let value = value - twoToThe[index];
-                }
-            }
+        let index = x & 15;
+        let mask = Math.twoToThe[index];
+        if (color) {
+            let value = value | mask;
+        } else {
+            let value = value & (~mask);
         }
         do Memory.poke(16384 + address, value);
         return;

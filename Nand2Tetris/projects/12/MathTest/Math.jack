@@ -44,6 +44,10 @@ class Math {
         return x;
     }
 
+    function int getMask(int i) {
+        return twoToThe[i];
+    }
+
     /** Returns the product of x and y. 
      *  When a Jack compiler detects the multiplication operator '*' in the 
      *  program's code, it handles it by invoking this method. In other words,
@@ -101,7 +105,7 @@ class Math {
     function int sqrt(int x) {
         var int y, j, temp, current;
         let j = 15;
-        while ((~(j < 0)) & (~Math.bit(x, j))) {
+        while (~((j < 0) | (Math.bit(x, j)))) {
             let j = j - 1;
         }
         let j = (j + 1) / 2;
