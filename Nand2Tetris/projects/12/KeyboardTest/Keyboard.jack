@@ -106,27 +106,7 @@ class Keyboard {
      */
     function int readInt(String message) {
         var String str;
-        var int i, size, num, c;
-        var boolean isNeg;
         let str = Keyboard.readLine(message);
-        let size = str.length();
-        if (str.charAt(0) = 45) {
-            let i = 1;
-            let isNeg = true;
-        }
-        if (i < size) {
-            let c = str.charAt(i);
-        }
-        while ((i < size) & ((c > 47) & (c < 58))) {
-            let num = (num * 10) + c - 48;
-            let i = i + 1;
-            if (i < size) {
-                let c = str.charAt(i);
-            }
-        }
-        if (isNeg) {
-            let num = -num;
-        }
-        return num;
+        return str.intValue();
     }
 }

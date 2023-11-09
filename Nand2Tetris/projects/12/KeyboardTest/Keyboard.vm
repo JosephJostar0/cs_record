@@ -163,84 +163,10 @@ goto WHILE_EXP0
 label WHILE_END0
 push local 0
 return
-function Keyboard.readInt 6
+function Keyboard.readInt 1
 push argument 0
 call Keyboard.readLine 1
 pop local 0
 push local 0
-call String.length 1
-pop local 2
-push local 0
-push constant 0
-call String.charAt 2
-push constant 45
-eq
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 1
-pop local 1
-push constant 0
-not
-pop local 5
-label IF_FALSE0
-push local 1
-push local 2
-lt
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push local 0
-push local 1
-call String.charAt 2
-pop local 4
-label IF_FALSE1
-label WHILE_EXP0
-push local 1
-push local 2
-lt
-push local 4
-push constant 47
-gt
-push local 4
-push constant 58
-lt
-and
-and
-not
-if-goto WHILE_END0
-push local 3
-push constant 10
-call Math.multiply 2
-push local 4
-add
-push constant 48
-sub
-pop local 3
-push local 1
-push constant 1
-add
-pop local 1
-push local 1
-push local 2
-lt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
-push local 0
-push local 1
-call String.charAt 2
-pop local 4
-label IF_FALSE2
-goto WHILE_EXP0
-label WHILE_END0
-push local 5
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push local 3
-neg
-pop local 3
-label IF_FALSE3
-push local 3
+call String.intValue 1
 return
