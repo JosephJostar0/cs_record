@@ -4,3 +4,6 @@
 [submodule "PAT"]
 	path = PAT
 	url = https://github.com/JosephJostar0/pat.git
+[submodule "CS50AI"]
+	path = CS50AI
+	url = https://github.com/JosephJostar0/CS50AI
