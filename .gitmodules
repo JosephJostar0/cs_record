@@ -3,4 +3,4 @@
 	url = https://github.com/JosephJostar0/Nand2Tetris.git
 [submodule "PAT"]
 	path = PAT
-	url = git@github.com:JosephJostar0/pat.git
+	url = https://github.com/JosephJostar0/pat.git
