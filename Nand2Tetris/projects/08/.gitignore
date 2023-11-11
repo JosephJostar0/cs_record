@@ -1,7 +1,0 @@
-*.html
-web.*
-temp.*
-refer*
-constASM.py
-Assembler.py
-/__pycache__
