@@ -17,7 +17,7 @@
 11. [Introduction to Algorithms, MIT](./算法导论/)
 12. [晴问OJ & 《算法笔记》](./晴问算法/)
 13. [操作系统 408考试复习](./操作系统/)
-14. [CS50 Introduction to Artificial Intelligence With Python, Harvard](./Harvard_CS50AI/) Edx
+14. [CS50 Introduction to Artificial Intelligence With Python, Harvard](https://github.com/JosephJostar0/CS50AI) Edx
 15. [Nand2Tetris, Hebrew University of Jerusalem](https://github.com/JosephJostar0/Nand2Tetris) Coursera
 
 这个库也许会一直更新下去。。。
