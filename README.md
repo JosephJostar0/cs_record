@@ -7,7 +7,7 @@
 1. [《啊哈算法！》](./啊哈算法/) 啊哈磊
 2. [《数学女孩》系列](./数学女孩/) 结城浩
 3. 《浪潮之巅》吴军
-4. [PAT程序设计能力考试](./PAT/)
+4. [PAT程序设计能力考试](https://github.com/JosephJostar0/pat)
 5. [数据结构 ZJU](./数据结构_陈越_何钦铭/) 中国大学慕课
 6. [计算机组成原理 HUST](./计算机组成_华中科技大学/) 中国大学慕课
 7. 计算机系统基础 NJU 中国大学慕课
@@ -18,6 +18,6 @@
 12. [晴问OJ & 《算法笔记》](./晴问算法/)
 13. [操作系统 408考试复习](./操作系统/)
 14. [CS50 Introduction to Artificial Intelligence With Python, Harvard](./Harvard_CS50AI/) Edx
-15. [Nand2Tetris, Hebrew University of Jerusalem](./Nand2Tetris/) Coursera
+15. [Nand2Tetris, Hebrew University of Jerusalem](https://github.com/JosephJostar0/Nand2Tetris) Coursera
 
 这个库也许会一直更新下去。。。
