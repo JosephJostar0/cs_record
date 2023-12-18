@@ -7,3 +7,6 @@
 [submodule "CS50AI"]
 	path = CS50AI
 	url = https://github.com/JosephJostar0/CS50AI
+[submodule "ToolBox"]
+	path = ToolBox
+	url = https://github.com/JosephJostar0/ToolBox
