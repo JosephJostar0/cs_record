@@ -10,3 +10,6 @@
 [submodule "ToolBox"]
 	path = ToolBox
 	url = https://github.com/JosephJostar0/ToolBox
+[submodule "MachineLearning"]
+	path = MachineLearning
+	url = git@github.com:JosephJostar0/Machine-Learning-Coursera.git
