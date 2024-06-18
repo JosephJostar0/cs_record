@@ -13,3 +13,6 @@
 [submodule "MachineLearning"]
 	path = MachineLearning
 	url = git@github.com:JosephJostar0/Machine-Learning-Coursera.git
+[submodule "DeepLearning"]
+	path = DeepLearning
+	url = git@github.com:JosephJostar0/DeepLearning-Coursera.git
