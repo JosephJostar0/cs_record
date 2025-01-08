@@ -6,24 +6,36 @@
 
 ```math
 \begin{aligned}
-生成函数
-F(z) &= \sum_{i=0}^{\infty} f_i z^i = 0 + z + z^2 + 2 z^3 + \dots \\
+\text{生成函数：} \quad
+F(z) &= \sum_{i=0}^{\infty} f_i z^i = 0 + z + z^2 + 2z^3 + \dots \\
 
-发现 F(z) &= z + z F(z) + z^2 F(z) \\
-故 F(z) &= \frac{z}{1 - z - z^2} \\
+\text{我们发现：} \quad
+F(z) &= z + z F(z) + z^2 F(z), \\
 
-        &= \frac{z}{(1 - \frac{1+\sqrt{5}}{2} z)(1 - \frac{1-\sqrt{5}}{2} z)} \\
+\text{因此：} \quad
+F(z) &= \frac{z}{1 - z - z^2} \\
 
-        &= \frac{1}{\sqrt{5}} (\frac{1}{
-            1-\frac{1+\sqrt{5}}{2} z
-        } - \frac{1}{
-            1-\frac{1-\sqrt{5}}{2} z
-        }) \\
+      &= \frac{z}{\big(1 - \frac{1+\sqrt{5}}{2} z\big)\big(1 - \frac{1-\sqrt{5}}{2} z\big)} \\
 
-由于 \frac{1}{1-x} &= \sum_{n=0}^{\infty} x^n \\
+      &= \frac{1}{\sqrt{5}} \left( 
+          \frac{1}{1 - \frac{1+\sqrt{5}}{2} z} 
+          - \frac{1}{1 - \frac{1-\sqrt{5}}{2} z} 
+      \right). \\
 
-故 F(z) &= \frac{1}{\sqrt{5}} \sum_{n=0}^{\infty} \big((\frac{1+\sqrt{5}}{2})^n - (\frac{1-\sqrt{5}}{2})^n\big) z^n \\
+\text{由于：} \quad
+\frac{1}{1-x} &= \sum_{n=0}^{\infty} x^n, \\
 
-则 f_i &= \frac{1}{\sqrt{5}} \big((\frac{1+\sqrt{5}}{2})^n - (\frac{1-\sqrt{5}}{2})^n\big) \\
+\text{所以：} \quad
+F(z) &= \frac{1}{\sqrt{5}} \sum_{n=0}^{\infty} 
+      \left[ 
+          \left(\frac{1+\sqrt{5}}{2}\right)^n 
+          - \left(\frac{1-\sqrt{5}}{2}\right)^n
+      \right] z^n. \\
+
+\text{于是：} \quad
+f_i &= \frac{1}{\sqrt{5}} \left[ 
+          \left(\frac{1+\sqrt{5}}{2}\right)^n 
+          - \left(\frac{1-\sqrt{5}}{2}\right)^n
+      \right].
 \end{aligned}
 ```
