@@ -4,7 +4,7 @@
 
 假定斐波那契数列的第$i$项为$f_i$  
 
-$$
+```math
 \begin{aligned}
 生成函数
 F(z) &= \sum_{i=0}^{\infty} f_i z^i = 0 + z + z^2 + 2 z^3 + \dots \\
@@ -26,4 +26,4 @@ F(z) &= \sum_{i=0}^{\infty} f_i z^i = 0 + z + z^2 + 2 z^3 + \dots \\
 
 则 f_i &= \frac{1}{\sqrt{5}} \big((\frac{1+\sqrt{5}}{2})^n - (\frac{1-\sqrt{5}}{2})^n\big) \\
 \end{aligned}
-$$
+```
